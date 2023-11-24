@@ -1,2 +1,7 @@
-*.ex5
-*.ex4
+MT5-Indicators/*
+!MT5-Indicators/Compiled/
+!MT5-Indicators/*.mq5
+
+MT4-Indicators/*
+!MT4-Indicators/Compiled/
+!MT4-Indicators/*.mq4

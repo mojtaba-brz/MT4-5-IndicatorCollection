@@ -34,7 +34,7 @@
 #property indicator_color2   clrRed
 #property indicator_width1   2
 #property indicator_width2   2
-#property indicator_minimum  0
+#property indicator_minimum  -1
 #property indicator_maximum  1
 #property strict
 
@@ -1499,10 +1499,7 @@ int OnCalculate(const int rates_total,
       upBuffer[pos] = EMPTY_VALUE;
       dnBuffer[pos] = EMPTY_VALUE;
       double trend = iPrecisionTrend(high,low,close,avgPeriod,sensitivity,pos,rates_total);
-      if (trend ==  1) 
-         upBuffer[pos] = 1;
-      if (trend == -1) 
-         dnBuffer[pos] = 1;
+      upBuffer[pos] = trend;
 
       if (customStream != NULL)
       {

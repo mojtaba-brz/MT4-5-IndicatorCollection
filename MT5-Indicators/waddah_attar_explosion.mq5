@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                       Waddah_Attar_Explosion.mq4 |
-//|                              Copyright © 2006, Eng. Waddah Attar |
+//|                              Copyright ï¿½ 2006, Eng. Waddah Attar |
 //|                                          waddahattar@hotmail.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2006, Eng. Waddah Attar"
+#property copyright "Copyright ï¿½ 2006, Eng. Waddah Attar"
 #property link "waddahattar@hotmail.com" 
 //---- indicator version
 #property version   "1.00"
@@ -12,44 +12,32 @@
 //---- number of indicator buffers 4
 #property indicator_buffers 4 
 //---- only three plots are used
-#property indicator_plots   3
+#property indicator_plots   2
 //+-----------------------------------+
 //|  Indicator drawing parameters     |
 //+-----------------------------------+
 //---- drawing the indicator as a three-color histogram
-#property indicator_type1 DRAW_COLOR_HISTOGRAM
+#property indicator_type2 DRAW_COLOR_HISTOGRAM
 //---- Gray, Lime and Magenta colors are used for the three-color histogram
-#property indicator_color1 Gray,Lime,Magenta
+#property indicator_color2 Gray,Lime,Magenta
 //---- indicator line is a solid one
-#property indicator_style1 STYLE_SOLID
-//---- indicator line width is equal to 2
-#property indicator_width1 2
-//---- displaying the indicator label
-#property indicator_label1 "MACD"
-
-//---- drawing the indicator as a line
-#property indicator_type2 DRAW_LINE
-//---- use blue color for the line
-#property indicator_color2 Blue
-//---- indicator line is a solid curve
 #property indicator_style2 STYLE_SOLID
 //---- indicator line width is equal to 2
 #property indicator_width2 2
-//---- displaying the signal line label
-#property indicator_label2  "Signal Line"
+//---- displaying the indicator label
+#property indicator_label2 "MACD"
 
 //---- drawing the indicator as a line
-#property indicator_type3 DRAW_LINE
-//---- use red color for the line
-#property indicator_color3 Red
-//---- the indicator line is a dash-dotted curve
-#property indicator_style3 STYLE_DASHDOTDOT
-//---- indicator line width is equal to 1
-#property indicator_width3 1
-//---- displaying the signal line
-#property indicator_label3  "DeadZonePip Level"
+#property indicator_type1 DRAW_LINE
+//---- use blue color for the line
+#property indicator_color1 Blue
+//---- indicator line is a solid curve
+#property indicator_style1 STYLE_SOLID
+//---- indicator line width is equal to 2
+#property indicator_width1 2
+//---- displaying the signal line label
+#property indicator_label1  "Signal Line"
 
-#property  indicator_minimum 0.0
 //+------------------------------------+
 //|  Indicator input parameters        |
 //+------------------------------------+
@@ -100,27 +88,27 @@ void OnInit()
    if(BB_Handle==INVALID_HANDLE)Print(" Failed to get handle of the iBands indicator");
 
 //---- set IndBuffer1[] dynamic array as an indicator buffer
-   SetIndexBuffer(0,IndBuffer1,INDICATOR_DATA);
+   SetIndexBuffer(1,IndBuffer1,INDICATOR_DATA);
 //---- performing the shift of the beginning of the indicator drawing
-   PlotIndexSetInteger(0,PLOT_DRAW_BEGIN,min_rates_total);
+   PlotIndexSetInteger(1,PLOT_DRAW_BEGIN,min_rates_total);
 //---- setting the indicator values that won't be visible on a chart
-   PlotIndexSetDouble(0,PLOT_EMPTY_VALUE,0.0);
+   PlotIndexSetDouble(1,PLOT_EMPTY_VALUE,0.0);
 //---- indexing the elements in buffers as timeseries   
    ArraySetAsSeries(IndBuffer1,true);
 
 //---- set ColorIndBuffer1[] as a colored index buffer   
-   SetIndexBuffer(1,ColorIndBuffer1,INDICATOR_COLOR_INDEX);
+   SetIndexBuffer(2,ColorIndBuffer1,INDICATOR_COLOR_INDEX);
 //---- performing the shift of the beginning of the indicator drawing
-   PlotIndexSetInteger(1,PLOT_DRAW_BEGIN,min_rates_total);
+   PlotIndexSetInteger(2,PLOT_DRAW_BEGIN,min_rates_total);
 //---- indexing the elements in buffers as timeseries   
    ArraySetAsSeries(ColorIndBuffer1,true);
 
 //---- set IndBuffer2[] as an indicator buffer
-   SetIndexBuffer(2,IndBuffer2,INDICATOR_DATA);
+   SetIndexBuffer(0,IndBuffer2,INDICATOR_DATA);
 //---- performing the shift of the beginning of the indicator drawing
-   PlotIndexSetInteger(2,PLOT_DRAW_BEGIN,min_rates_total);
+   PlotIndexSetInteger(0,PLOT_DRAW_BEGIN,min_rates_total);
 //---- setting the indicator values that won't be visible on a chart
-   PlotIndexSetDouble(2,PLOT_EMPTY_VALUE,0.0);
+   PlotIndexSetDouble(0,PLOT_EMPTY_VALUE,0.0);
 //---- indexing the elements in buffers as timeseries   
    ArraySetAsSeries(IndBuffer2,true);
 
@@ -197,15 +185,14 @@ int OnCalculate(const int rates_total,     // number of bars in history at the c
 
       Dead=_Point*DeadZonePip;
 
-      IndBuffer1[bar]=MathAbs(Trend1);
+      IndBuffer1[bar]=-MathAbs(Trend1);
 
       Bid=close[bar];
       Ask=Bid+spread[bar];
 
       if(Trend1>0) ColorIndBuffer1[bar]=1;
       if(Trend1<0) ColorIndBuffer1[bar]=2;
-      IndBuffer2[bar]=Explo1;
-      IndBuffer3[bar]=Dead;
+      IndBuffer2[bar]=-Explo1;
       if(bar==0)
         {
          if(Trend1>0 && Trend1>Explo1 && Trend1>Dead && 

@@ -56,8 +56,7 @@ input enMaTypes  trendMaType = ma_ema;   // Moving average method
 input enPrices   trendPrice  = pr_close; // Price 
 input double     SmoothLength = 20;      // Smoothing period
 input double     SmoothPhase  = 0;       // Smoothing phase
-input double     TriggerUp    = 0.05;    // Upper trigger
-input double     TriggerDown  = -0.05;   // Lower trigger
+input double    dead_zone    =  0.05;   // Dead-zone
 
 double TrendBuffer[],MMABuffer[],SMMABuffer[],TDFBuffer[];
 
@@ -76,9 +75,7 @@ int OnInit()
    SetIndexBuffer(1,MMABuffer,  INDICATOR_CALCULATIONS);
    SetIndexBuffer(2,SMMABuffer, INDICATOR_CALCULATIONS);
    SetIndexBuffer(3,TDFBuffer,  INDICATOR_CALCULATIONS);
-   IndicatorSetInteger(INDICATOR_LEVELS,2);
-   IndicatorSetDouble(INDICATOR_LEVELVALUE,0,TriggerUp);
-   IndicatorSetDouble(INDICATOR_LEVELVALUE,1,TriggerDown);
+   IndicatorSetInteger(INDICATOR_LEVELS,0);
    IndicatorSetString(INDICATOR_SHORTNAME,"trend direction and force ("+(string)trendPeriod+")");
    return(0);
 }
@@ -132,6 +129,8 @@ int OnCalculate(const int rates_total,const int prev_calculated,
                if (absValue > 0)
                      TrendBuffer[i] = iSmooth(TDFBuffer[i]/absValue,SmoothLength,SmoothPhase,i,rates_total,0);
                else  TrendBuffer[i] = iSmooth(0.00,                 SmoothLength,SmoothPhase,i,rates_total,0);
+               
+               TrendBuffer[i] = MathAbs(TrendBuffer[i]) - dead_zone;
       
    }
    return(rates_total);

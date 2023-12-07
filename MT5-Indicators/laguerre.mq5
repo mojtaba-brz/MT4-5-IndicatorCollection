@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                     Laguerre.mq5 |
-//|                             Copyright © 2010,   Nikolay Kositsin | 
+//|                             Copyright ï¿½ 2010,   Nikolay Kositsin | 
 //|                              Khabarovsk,   farria@mail.redcom.ru | 
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2010, Nikolay Kositsin"
+#property copyright "Copyright ï¿½ 2010, Nikolay Kositsin"
 #property link "farria@mail.redcom.ru"
 //--- indicator version
 #property version   "1.00"
@@ -126,7 +126,7 @@ int OnCalculate(const int rates_total,    // number of bars in history at the cu
       if(CU+CD!=0) LRSI=CU/(CU+CD);
 
       //--- set value to ExtLineBuffer[]
-      ExtLineBuffer[bar]=LRSI;
+      ExtLineBuffer[bar]=LRSI-0.5;
      }
 //---     
    return(rates_total);

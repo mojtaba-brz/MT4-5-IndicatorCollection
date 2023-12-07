@@ -7,23 +7,23 @@
 #property indicator_buffers 5
 #property indicator_plots   4
 
-#property indicator_label1  "alma level up"
-#property indicator_type1   DRAW_LINE
-#property indicator_color1  clrDodgerBlue
-#property indicator_style1  STYLE_DOT
-#property indicator_label2  "alma middle level"
+#property indicator_label2  "alma level up"
 #property indicator_type2   DRAW_LINE
-#property indicator_color2  clrSilver
+#property indicator_color2  clrDodgerBlue
 #property indicator_style2  STYLE_DOT
-#property indicator_label3  "alma level down"
+#property indicator_label3  "alma middle level"
 #property indicator_type3   DRAW_LINE
-#property indicator_color3  clrSandyBrown
+#property indicator_color3  clrSilver
 #property indicator_style3  STYLE_DOT
-#property indicator_label4  "alma"
-#property indicator_type4   DRAW_COLOR_LINE
-#property indicator_color4  clrSilver,clrDeepSkyBlue,clrSandyBrown
-#property indicator_style4  STYLE_SOLID
-#property indicator_width4  2
+#property indicator_label4  "alma level down"
+#property indicator_type4   DRAW_LINE
+#property indicator_color4  clrSandyBrown
+#property indicator_style4  STYLE_DOT
+#property indicator_label1  "alma"
+#property indicator_type1   DRAW_COLOR_LINE
+#property indicator_color1  clrSilver,clrDeepSkyBlue,clrSandyBrown
+#property indicator_style1  STYLE_SOLID
+#property indicator_width1  2
 
 //
 //
@@ -100,11 +100,11 @@ double ColorBuffer[];
 
 int OnInit()
 {
-   SetIndexBuffer(0,levup,INDICATOR_DATA);
-   SetIndexBuffer(1,levmi,INDICATOR_DATA);
-   SetIndexBuffer(2,levdn,INDICATOR_DATA);
-   SetIndexBuffer(3,MaBuffer,INDICATOR_DATA);
-   SetIndexBuffer(4,ColorBuffer,INDICATOR_COLOR_INDEX);
+   SetIndexBuffer(2,levup,INDICATOR_DATA);
+   SetIndexBuffer(3,levmi,INDICATOR_DATA);
+   SetIndexBuffer(4,levdn,INDICATOR_DATA);
+   SetIndexBuffer(0,MaBuffer,INDICATOR_DATA);
+   SetIndexBuffer(1,ColorBuffer,INDICATOR_COLOR_INDEX);
    IndicatorSetString(INDICATOR_SHORTNAME,"Alma ("+(string)AlmaPeriod+","+(string)AlmaSigma+(string)AlmaSample+")");
    return(0);
 }

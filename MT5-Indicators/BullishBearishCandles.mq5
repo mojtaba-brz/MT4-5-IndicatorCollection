@@ -29,6 +29,9 @@
 #property indicator_color3  clrWheat
 #property indicator_style3  STYLE_SOLID
 #property indicator_width3  1
+
+input int fake_param = 1;
+
 //--- indicator buffers
 static double         UpForceBuffer[], DownForceBuffer[], Power[];
 static double  down, up,

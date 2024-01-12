@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                        J_TPO.mq5 |
-//|                             Copyright © 2011,   Nikolay Kositsin | 
+//|                             Copyright ï¿½ 2011,   Nikolay Kositsin | 
 //|                              Khabarovsk,   farria@mail.redcom.ru | 
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, Nikolay Kositsin"
+#property copyright "Copyright ï¿½ 2011, Nikolay Kositsin"
 #property link      "farria@mail.redcom.ru"
 //---- indicator version
 #property version   "1.00"
@@ -53,6 +53,7 @@ enum Applied_price_      // Type of constant
 //|  Indicator input parameters                  |
 //+----------------------------------------------+
 input int Len_=14;                     // Smoothing period
+
 input Applied_price_ IPC=PRICE_CLOSE_; // Price constant
 //+----------------------------------------------+
 //---- declaration of dynamic arrays that

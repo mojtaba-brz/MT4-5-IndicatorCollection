@@ -17,6 +17,9 @@
 #property indicator_color1  clrDeepSkyBlue
 #property indicator_style1  STYLE_SOLID
 #property indicator_width1  2
+
+input int fake_param = 1;
+
 //--- indicator buffers
 static double         TrendBuffer[];
 static double         DownFractalBuffer[];

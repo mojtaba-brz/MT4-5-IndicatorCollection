@@ -14,6 +14,7 @@
 
 //--- input parameters
 input int MA_Length    =  1; // Period of MA 
+
 input int VarMA_Length =  4; // Period of VarMA 
 input int ADX_Length   =  8; // Period of ADX
 
@@ -56,8 +57,8 @@ void OnInit()
 //+------------------------------------------------------------------+
 //| Relative Strength Index                                          |
 //+------------------------------------------------------------------+
-int OnCalculate (const int rates_total,      // размер входных таймсерий
-                 const int prev_calculated,  // обработано баров на предыдущем вызове
+int OnCalculate (const int rates_total,      // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                 const int prev_calculated,  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                  const datetime& time[],     // Time
                  const double& open[],       // Open
                  const double& high[],       // High

@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+ 
 //|                                           DiNapoliStochastic.mq5 | 
-//|                                      Copyright © 2010, LenIFCHIK |
+//|                                      Copyright ï¿½ 2010, LenIFCHIK |
 //|                                                                  |
 //+------------------------------------------------------------------+
 //---- copyright
-#property copyright "Copyright © 2010, LenIFCHIK"
+#property copyright "Copyright ï¿½ 2010, LenIFCHIK"
 #property link      ""
 //---- version
 #property version   "1.00"
@@ -56,6 +56,7 @@
 //| Indicator input parameters                   |
 //+----------------------------------------------+
 input uint FastK=8;    // Period of fast %K line
+
 input uint SlowK=3;    // Period of slow %K line
 input uint SlowD=3;    // Period of slow %D line
 input int Shift=0;     // Shift (in bars)

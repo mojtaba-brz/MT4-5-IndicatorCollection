@@ -26,7 +26,8 @@
 //--- line style
 #property indicator_levelstyle STYLE_DASHDOTDOT
 //--- indicator input parameters
-input double gamma=0.7;
+input uint config_param = 20;
+double gamma = config_param/25.;           // Laguerre RSI gamma
 //--- declaration of dynamic array that further
 //--- will be used as indicator buffers
 double ExtLineBuffer[];

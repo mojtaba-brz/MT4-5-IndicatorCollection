@@ -41,6 +41,7 @@ enum enPrices
    pr_hatbiased   // Heiken ashi trend biased price
 };
 input int      LookBack = 20;       // Lookback period
+
 input enPrices Price    = pr_close; // Price to use
 input int      Median   = 5;        // Median for adapting
 

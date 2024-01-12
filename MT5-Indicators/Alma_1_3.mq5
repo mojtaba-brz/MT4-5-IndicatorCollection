@@ -68,6 +68,7 @@ enum enFilter
 };
 
 input int      AlmaPeriod  = 14;       // Calculation period
+
 input enPrices AlmaPrice   = pr_close; // Price to use
 input double   AlmaSigma   = 6.0;      // Alma sigma
 input double   AlmaSample  = 0.25;     // Alma sample

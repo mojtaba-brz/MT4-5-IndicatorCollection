@@ -1,13 +1,13 @@
 //+---------------------------------------------------------------------+
 //|                                          Ease of Movement Value.mq5 |
-//|                                Copyright © 2011,   Nikolay Kositsin | 
+//|                                Copyright ï¿½ 2011,   Nikolay Kositsin | 
 //|                                 Khabarovsk,   farria@mail.redcom.ru | 
 //+---------------------------------------------------------------------+
 //| For the indicator to work, place the file SmoothAlgorithms.mqh      |
 //| in the directory: terminal_data_folder\MQL5\Include                 |
 //+---------------------------------------------------------------------+
 //---- author of the indicator
-#property copyright "Copyright © 2011, Nikolay Kositsin"
+#property copyright "Copyright ï¿½ 2011, Nikolay Kositsin"
 //---- link to the website of the author
 #property link "farria@mail.redcom.ru"
 #property description "Ease of Movement Value"
@@ -71,8 +71,9 @@ enum Applied_price_      // Type of constant
 //+----------------------------------------------+
 //|  Indicator input parameters                  |
 //+----------------------------------------------+
-input Smooth_Method MA_SMethod=MODE_SMA;           // Smoothing method
-input int SmLength=14;                             // Smoothing depth                    
+input int SmLength=14;                             // Smoothing depth  
+
+input Smooth_Method MA_SMethod=MODE_SMA;           // Smoothing method                  
 input int SmPhase=15;                              // Smoothing parameter
 input Applied_price_ IPC=PRICE_QUARTER_;           // Price constant
 input ENUM_APPLIED_VOLUME VolumeType=VOLUME_TICK;  // Volume

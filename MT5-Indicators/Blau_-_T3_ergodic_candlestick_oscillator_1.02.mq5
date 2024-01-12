@@ -40,7 +40,8 @@ enum enColors
    cl_onSlope,  // Color based on the slope of the oscillator
    cl_onZero    // Color based on zero cross
 };
-input double   Period1      = 32;     // T3 period no.1
+input int   Period1      = 32;     // T3 period no.1
+
 input double   Period2      =  5;     // T3 period no.2
 input double   Period3      =  5;     // T3 signal line period
 input double   Hot          =  0.4;   // T3 hot

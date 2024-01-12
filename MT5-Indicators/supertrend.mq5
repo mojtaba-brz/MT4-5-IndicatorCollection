@@ -19,6 +19,7 @@
 #property indicator_color2  clrGreen, clrRed
 
 input int    Periode=10;
+
 input double Multiplier=3;
 input bool   Show_Filling=true; // Show as DRAW_FILLING
 

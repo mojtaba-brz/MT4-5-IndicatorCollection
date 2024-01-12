@@ -17,6 +17,7 @@
 #property indicator_width1  1
 //--- input parameters
 input int      MD_smooth=125; //Smoothing parameter (60% of equivalent MA period)
+
 //--- indicator buffers
 double         MDBuffer[];
 double         EMABuffer[];

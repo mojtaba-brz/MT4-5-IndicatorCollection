@@ -26,10 +26,12 @@
 #property indicator_style2 STYLE_SOLID
 #property indicator_style3 STYLE_SOLID
 
+input int config_param = 10; // Config Parameter
+
 input ENUM_MA_METHOD InpMAMethod = MODE_EMA;
-input int InpPeriodFast = 5;
-input int InpPeriodMedium = 8;
-input int InpPeriodSlow = 20;
+int InpPeriodFast = (int)MathRound(5 * config_param/10);
+int InpPeriodMedium = (int)MathRound(8 * config_param/10);
+int InpPeriodSlow = (int)MathRound(20 * config_param/10);
 input int InpATRPeriod = 14;
 input double InpATRMultiplier = 0.5;
 

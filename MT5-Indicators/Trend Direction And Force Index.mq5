@@ -52,6 +52,7 @@ enum enMaTypes
 };
 
 input int        trendPeriod = 20;       // Period
+
 input enMaTypes  trendMaType = ma_ema;   // Moving average method
 input enPrices   trendPrice  = pr_close; // Price 
 input double     SmoothLength = 20;      // Smoothing period

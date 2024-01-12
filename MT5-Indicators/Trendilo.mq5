@@ -58,9 +58,10 @@ enum PriceType
    PriceTrendBiased, // Trend biased
    PriceVolume, // Volume
 };
+input int length = 50; // Lookback
+
 input PriceType src = PriceClose; // Source
 input int smooth = 1; // Smoothing
-input int length = 50; // Lookback
 input double offset = 0.85; // ALMA Offset
 input int sigma = 6; // ALMA Sigma
 input double bmult = 1; // Band Multiplier

@@ -27,6 +27,7 @@
 //+------------------------------------------------------------------+
 enum  ENUM_MA_METHOD_EXT { MOD_EMA, MOD_SMMA };
 input int                InpPeriodMA=2;                 // period
+
 input int                InpIteration=20;               // number of iterations
 input ENUM_MA_METHOD_EXT InpMethodMA=MOD_EMA;           // Moving average method
 input bool               inpDisplaySignal;              // display arrow

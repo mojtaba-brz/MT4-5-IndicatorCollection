@@ -39,6 +39,7 @@
 //|  Indicator input parameters                  |
 //+----------------------------------------------+
 input int CutoffPeriod=15; // Indicator period
+
 input int Shift=0;         // Horizontal shift of the indicator in bars 
 //+----------------------------------------------+
 //---- declaration of a dynamic array that

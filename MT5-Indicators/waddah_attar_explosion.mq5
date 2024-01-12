@@ -42,8 +42,9 @@
 //|  Indicator input parameters        |
 //+------------------------------------+
 input int Fast_MA = 20;       // Period of the fast MACD moving average
-input int Slow_MA = 40;       // Period of the slow MACD moving average
-input int BBPeriod=20;        // Bollinger period
+
+int Slow_MA = 2*Fast_MA;       // Period of the slow MACD moving average
+int BBPeriod=Fast_MA;        // Bollinger period
 input double BBDeviation=2.0; // Number of Bollinger deviations
 input int  Sensetive=150;
 input int  DeadZonePip=400;

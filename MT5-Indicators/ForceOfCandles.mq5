@@ -30,6 +30,8 @@
 #property indicator_style3  STYLE_SOLID
 #property indicator_width3  1
 //--- indicator buffers
+input int fake_param = 1;
+
 static double         UpForceBuffer[], DownForceBuffer[], Power[];
 static double  power_of_sellers, power_of_buyers,
        total_range, Force[],

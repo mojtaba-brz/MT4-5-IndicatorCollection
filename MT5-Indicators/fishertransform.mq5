@@ -58,6 +58,7 @@
 //|  Indicator input parameters                  |
 //+----------------------------------------------+
 input int Length=10;  // Indicator period 
+
 input int Shift=0;    // Horizontal shift of the indicator in bars 
 //+----------------------------------------------+
 //---- declaration of dynamic arrays that

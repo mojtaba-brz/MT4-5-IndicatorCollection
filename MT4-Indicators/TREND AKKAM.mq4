@@ -4,7 +4,9 @@
 #property indicator_color1 Orange
  double     akk_range=100;
  double     ima_range = 1;
-input double     akk_factor=6;
+input int config_param = 60;
+double     akk_factor= config_param/10.;
+
  int        Mode = 0;
  double     DeltaPrice = 30;
 

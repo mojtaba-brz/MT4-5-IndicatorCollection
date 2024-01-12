@@ -6,7 +6,7 @@
 //|                                  dr_richard_gaines@yahoo.com
 //|                                    
 //+------------------------------------------------------------------+
-#property copyright " Copyright © 2004, MetaQuotes Software Corp."
+#property copyright " Copyright ï¿½ 2004, MetaQuotes Software Corp."
 #property link      " http://www.metaquotes.net/"
 #property indicator_separate_window
 #property indicator_color1 Blue
@@ -19,7 +19,8 @@
 //+------------------------------------------------------------------+
 //| External variables                                               |
 //+------------------------------------------------------------------+
-extern double n = 20;
+extern int n = 20;
+
 extern double CountBars = 5000;
 extern double t3_period = 5;
 extern double b = 0.618;
@@ -101,7 +102,7 @@ double e52 = 0;
 double e62 = 0;
 /*[[
  Name := Trend Continuation Factor2 
- Author := Copyright © 2004, MetaQuotes Software Corp.
+ Author := Copyright ï¿½ 2004, MetaQuotes Software Corp.
  Link := http://www.metaquotes.net/
  Separate Window := Yes
  First Color := Blue

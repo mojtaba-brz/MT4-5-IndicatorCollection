@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                          TII.mq4 |
-//|                               Copyright © 2014, Gehtsoft USA LLC |
+//|                               Copyright ï¿½ 2014, Gehtsoft USA LLC |
 //|                                            http://fxcodebase.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2014, Gehtsoft USA LLC"
+#property copyright "Copyright ï¿½ 2014, Gehtsoft USA LLC"
 #property link      "http://fxcodebase.com"
 
 #property indicator_separate_window
@@ -11,7 +11,7 @@
 #property indicator_color1 Yellow
 
 extern int Length=30;
-extern int MA_Length=60;
+int MA_Length=Length*2;
 extern int MA_Method=0;  // 0 - SMA
                          // 1 - EMA
                          // 2 - SMMA

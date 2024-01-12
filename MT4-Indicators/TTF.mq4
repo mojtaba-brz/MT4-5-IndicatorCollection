@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                   ttf.mq4        |
-//|                      Copyright © 2005, Nick Bilak                |
+//|                      Copyright ï¿½ 2005, Nick Bilak                |
 //|                                                                  |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2005, Nick Bilak"
+#property copyright "Copyright ï¿½ 2005, Nick Bilak"
 #property link      "beluck[at]gmail.com"
 //----
 #property indicator_separate_window
@@ -12,6 +12,7 @@
 #property indicator_color2 Red
 //---- input parameters
 extern int TTFbars=8;
+
 //15=default number of bars for computation
 extern int TopLine=75;
 extern int BottomLine=-75;

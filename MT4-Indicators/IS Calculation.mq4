@@ -30,6 +30,7 @@
 #property indicator_color2 Green
 
 input int period = 10;
+
 input int nbchandelier = 10;
 input int lag = 0;
 input int bars_limit = 100000; // Bars limit

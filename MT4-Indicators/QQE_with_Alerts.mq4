@@ -1,6 +1,6 @@
 //+------------------------------------------------------------------+ 
 //|   Qualitative Quantitative Estimation Indicator with Alerts      |
-//|                                   Copyright © 2006 Roman Ignatov |
+//|                                   Copyright ï¿½ 2006 Roman Ignatov |
 //|                                  mailto:roman.ignatov@gmail.com  | 
 //|                                                                  |
 //| V1.   Completed by Roman Ignatov 2006 (roman.ignatov@gmail.com)  |
@@ -8,7 +8,7 @@
 //|               a)   Complete Code rewrite                         |
 //|               b)   Added Audio, Visual and eMail alerts          | 
 //|                                                                  |
-//|   Copyright © 2008, Tim Hyder aka Hiachiever                     |
+//|   Copyright ï¿½ 2008, Tim Hyder aka Hiachiever                     |
 //|                                                                  |
 //|   PO BOX 768, Hillarys, Western Australia, Australia, 6923       |
 //|                                                                  |
@@ -25,7 +25,7 @@
 //|                                                                  |
 //|   PayPal - hiachiever@gmail.com                                  |  
 //+------------------------------------------------------------------+ 
-#property copyright "Copyright © 2008 Tim Hyder"
+#property copyright "Copyright ï¿½ 2008 Tim Hyder"
 #property link      "mailto:hiachiever@gmail.com"
 //----
 #define vers    "09.Feb.2008"
@@ -45,10 +45,11 @@
 //----
 extern string NOTESETTINGS=" --- INDICATOR SETTINGS ---";
 extern int SF=5;
+
 extern string NOTEALERTS=" --- Alerts ---";
 extern int AlertLevel=50;
-extern bool MsgAlerts=true;
-extern bool SoundAlerts=true;
+extern bool MsgAlerts=false;
+extern bool SoundAlerts=false;
 extern string SoundAlertFile="alert.wav";
 extern bool eMailAlerts=false;
 //----

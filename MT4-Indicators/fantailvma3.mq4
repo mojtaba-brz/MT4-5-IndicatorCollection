@@ -1,6 +1,6 @@
 //+------------------------------------------------------------------+
 //|                                                  FantailVMA3.mq4 |
-//|                                  Copyright © 2007, Forex-TSD.com |
+//|                                  Copyright ï¿½ 2007, Forex-TSD.com |
 //|                         Written by IgorAD,igorad2003@yahoo.co.uk |   
 //|            http://finance.groups.yahoo.com/group/TrendLaboratory |                                      
 //+------------------------------------------------------------------+
@@ -10,7 +10,7 @@
 //Two lines have been commented out and a third one added to use one less array, VarMA[].
 //FantailVMA2 & Fantail2.tpl: Turbo version attempt, fantail not adjusted yet for shorter horizontal, 17 Sept 2007.
 //FantailVMA3 & Fantail3.tpl: Live end of previous version had the fantail lines defaulting to MA_Length=1.
-#property copyright "Copyright © 2007, Forex-TSD.com "
+#property copyright "Copyright ï¿½ 2007, Forex-TSD.com "
 #property link      "http://www.forex-tsd.com/"
 
 #property indicator_chart_window
@@ -22,6 +22,7 @@
 //---- input parameters
 //For both user settings, 2 is fast, 8 is slow.Weight=2.3 gives late entry.
 extern int    ADX_Length=2; 
+
 extern double Weighting=2.0;
 extern int  MA_Length=1;//This must be =1 so that the VMA base line does not get averaged.
 extern int  MA_Mode=1;

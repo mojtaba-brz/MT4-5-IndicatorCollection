@@ -21,11 +21,12 @@
 //
 //
 //
+input int config_param = 10;
+int             STCPeriod    = (int)MathRound(10 * config_param/10);             // Schaff period
+int             FastMAPeriod = (int)MathRound(23 * config_param/10);             // Fast macd period
+int             SlowMAPeriod = (int)MathRound(50 * config_param/10);             // Slow macd period
 
 extern ENUM_TIMEFRAMES TimeFrame    = PERIOD_CURRENT; // Time frame
-extern int             STCPeriod    = 10;             // Schaff period
-extern int             FastMAPeriod = 23;             // Fast macd period
-extern int             SlowMAPeriod = 50;             // Slow macd period
 extern double          SignalPeriod = 3;              // Signal period
 extern bool            Interpolate  = true;           // Interpolate in multi time frame mode?
 

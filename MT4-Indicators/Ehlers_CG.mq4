@@ -24,6 +24,7 @@ double CG[];
 double Trigger[];
 
 extern int Length=10;
+
 int buffers=0;
 int drawBegin=0;
 //+------------------------------------------------------------------+

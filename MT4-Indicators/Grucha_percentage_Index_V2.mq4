@@ -20,6 +20,7 @@ double srednia[];
 double dResult,gora,dol,suma,close,open,wynik;
 
 extern int Okresy=10;
+
 extern int MA_Okresy=10;
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -57,7 +58,7 @@ int start()
    if(counted_bars==0) limit-=1+Okresy;
 
    int pos=limit;
-//---- g³ówna pêtla
+//---- gï¿½ï¿½wna pï¿½tla
    while(pos>=0)
      {
       close= Close[pos];

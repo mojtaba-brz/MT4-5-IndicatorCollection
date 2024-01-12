@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                   GeoMean_MA.mq4 |
-//|                               Copyright © 2012, Gehtsoft USA LLC |
+//|                               Copyright ï¿½ 2012, Gehtsoft USA LLC |
 //|                                            http://fxcodebase.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2012, Gehtsoft USA LLC"
+#property copyright "Copyright ï¿½ 2012, Gehtsoft USA LLC"
 #property link      "http://fxcodebase.com"
 
 #property indicator_chart_window
@@ -11,6 +11,7 @@
 #property indicator_color1 Yellow
 
 extern int Length=10;
+
 extern int Price=0;    // Applied price
                        // 0 - Close
                        // 1 - Open

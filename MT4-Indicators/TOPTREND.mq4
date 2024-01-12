@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
 //|                                               BBands_Stop_v1.mq4 |
-//|                           Copyright © 2006, TrendLaboratory Ltd. |
+//|                           Copyright ï¿½ 2006, TrendLaboratory Ltd. |
 //|            http://finance.groups.yahoo.com/group/TrendLaboratory |
 //|                                       E-mail: igorad2004@list.ru |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2006, TrendLaboratory Ltd."
+#property copyright "Copyright ï¿½ 2006, TrendLaboratory Ltd."
 #property link      "http://finance.groups.yahoo.com/group/TrendLaboratory"
 
 #property indicator_chart_window
@@ -17,6 +17,7 @@
 #property indicator_color6 Red
 //---- input parameters
 extern int    Length=20;      // Bollinger Bands Period
+
 extern int    Deviation=2;    // Deviation was 2
 extern double MoneyRisk=1.00; // Offset Factor
 extern int    Signal=1;       // Display signals mode: 1-Signals & Stops; 0-only Stops; 2-only Signals;

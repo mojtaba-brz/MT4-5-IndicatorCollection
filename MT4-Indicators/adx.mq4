@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                          ADX.mq4 |
-//|                      Copyright © 2004, MetaQuotes Software Corp. |
+//|                      Copyright пїЅ 2004, MetaQuotes Software Corp. |
 //|                                       http://www.metaquotes.net/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2004, MetaQuotes Software Corp."
+#property copyright "Copyright пїЅ 2004, MetaQuotes Software Corp."
 #property link      "http://www.metaquotes.net/"
 
 #property indicator_separate_window
@@ -13,6 +13,7 @@
 #property indicator_color3 Wheat
 //---- input parameters
 extern int ADXPeriod=14;
+
 //---- buffers
 double ADXBuffer[];
 double PlusDiBuffer[];
@@ -73,7 +74,7 @@ int start()
       if(pdm==mdm) { pdm=0; mdm=0; }
       else if(pdm<mdm) pdm=0;
            else if(mdm<pdm) mdm=0;
-      //---- вычисляем истинный интервал
+      //---- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
       double num1=MathAbs(price_high-price_low);
       double num2=MathAbs(price_high-Close[i+1]);
       double num3=MathAbs(price_low-Close[i+1]);

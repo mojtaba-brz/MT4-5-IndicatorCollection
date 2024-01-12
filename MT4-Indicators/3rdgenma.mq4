@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                3rd Generation MA |
-//|                                      Copyright © 2011, EarnForex |
+//|                                      Copyright ï¿½ 2011, EarnForex |
 //|                                        http://www.earnforex.com/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, EarnForex"
+#property copyright "Copyright ï¿½ 2011, EarnForex"
 #property link      "http://www.earnforex.com"
 /*
 
@@ -18,7 +18,8 @@ Offers least possible lag but still provides price smoothing
 #property indicator_color2 Blue 
 //---- indicator parameters
 extern int MA_Period=220;
-extern int MA_Sampling_Period=50; // Sampling period should be less than 1/4 of MA_Period
+
+int MA_Sampling_Period=(int)MathRound(MA_Period/4.5); // Sampling period should be less than 1/4 of MA_Period
 extern int MA_Method=1; //0 - SMA, 1 - EMA, 2 - SMMA, 3 - LWMA
 extern int MA_Applied_Price=5; // 0 - PRICE_CLOSE, 1 - PRICE_OPEN, 2 - PRICE_HIGH, 3 - PRICE_LOW, 4 - PRICE_MEDIAN, 5 - PRICE_TYPICAL, 6 - PRICE_WEIGHTED
 //---- indicator buffers

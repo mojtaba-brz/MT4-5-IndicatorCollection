@@ -11,9 +11,10 @@
 #property indicator_color1 Magenta
 #property indicator_color2 Orange
 //---- input parameters
-extern int       FastEMA=12;
-extern int       SlowEMA=24;
-extern int       SignalEMA=9;
+input int config_param = 10;
+int       FastEMA=(int)MathRound(12 * config_param/10);
+int       SlowEMA=(int)MathRound(24 * config_param/10);
+int       SignalEMA=(int)MathRound(9 * config_param/10);
 //---- buffers
 double MACDBuffer[];
 double SignalBuffer[];

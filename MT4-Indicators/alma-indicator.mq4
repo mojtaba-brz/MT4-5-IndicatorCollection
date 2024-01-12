@@ -19,6 +19,7 @@
 //
 
 extern int    AlmaPeriod = 14;
+
 extern double AlmaSigma  = 6.0;
 extern double AlmaSample = 0.5;
 extern int    AlmaPrice  = PRICE_CLOSE;

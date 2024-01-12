@@ -22,10 +22,10 @@
 //
 //
 //
+extern int    kpoShortCycle  = 8;
+int    kpoLongCycle   = kpoShortCycle*8;
 
 extern double kpoDeviations  = 2.0;
-extern int    kpoShortCycle  = 8;
-extern int    kpoLongCycle   = 65;
 extern double kpoSensitivity = 40; 
 extern bool   allPeaksMode   = false;
 

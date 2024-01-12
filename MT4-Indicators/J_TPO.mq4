@@ -1,6 +1,6 @@
 //+------------------------------------------------------------------+
 //|                                               J_TPO_Velocity.mq4 |
-//|                      Copyright © 2005,                           |
+//|                      Copyright ï¿½ 2005,                           |
 //|                                                                  |
 //+------------------------------------------------------------------+
 //+----------------------------------------------------------------------------------+ 
@@ -21,7 +21,7 @@
 //|                                                                                  |
 //| This code is released under the terms of the GNU General Public License V2       |
 //+----------------------------------------------------------------------------------+
-#property copyright "Copyright © 2005"
+#property copyright "Copyright ï¿½ 2005"
 #property link      "www.metatrader.org"
 //----
 #property indicator_separate_window
@@ -29,6 +29,7 @@
 #property indicator_color1 DodgerBlue
 //---- input parameters
 extern int       Len=14;
+
 //---- buffers
 double ExtMapBuffer1[];
 //+------------------------------------------------------------------+

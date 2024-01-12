@@ -12,6 +12,7 @@
 #property strict
 
 input int            x_prd       = 14;
+
 input ENUM_MA_METHOD averageMode = MODE_SMA;
 
 double dpo[],dpoUp[],dpoDn[],valc[];

@@ -45,6 +45,7 @@
 
 //--- input parameters
 input int                        ChannelPeriod  =100;
+
 input ENUM_APPLIED_PRICE         InputPrice     = PRICE_CLOSE;     // Input price
 //input ENUM_TIMEFRAMES            TimeFrame      = PERIOD_CURRENT; //Multi-TimeFrame period
 

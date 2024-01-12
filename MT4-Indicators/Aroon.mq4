@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                     Momentum.mq4 |
-//|                      Copyright © 2004, MetaQuotes Software Corp. |
+//|                      Copyright ï¿½ 2004, MetaQuotes Software Corp. |
 //|                                       http://www.metaquotes.net/ |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2004, MetaQuotes Software Corp."
+#property copyright "Copyright ï¿½ 2004, MetaQuotes Software Corp."
 #property link      "http://www.metaquotes.net/"
 
 #property indicator_separate_window
@@ -19,6 +19,7 @@
 
 //---- input parameters
 extern int MomPeriod=14;
+
 //---- buffers
 double MomBuffer1[],MomBuffer2[];
 //+------------------------------------------------------------------+

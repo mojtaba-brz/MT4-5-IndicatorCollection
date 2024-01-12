@@ -27,6 +27,7 @@
 #property strict
 
 extern int Length=9;
+
 input ENUM_APPLIED_PRICE Price = PRICE_CLOSE; // Applied price
 
 double CMO[];

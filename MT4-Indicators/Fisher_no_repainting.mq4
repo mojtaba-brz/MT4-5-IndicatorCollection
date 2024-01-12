@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                   Fisher_m11.mq4 |
-//|                                   Copyright © 23.07.2006 MartinG |
+//|                                   Copyright ï¿½ 23.07.2006 MartinG |
 //|                                http://home.arcor.de/cam06/fisher |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 23.07.2006 MartinG"
+#property copyright "Copyright ï¿½ 23.07.2006 MartinG"
 #property link      "http://home.arcor.de/cam06/fisher"
 
 #property indicator_separate_window
@@ -19,6 +19,7 @@ int   LeftNum1=56;
 int   LeftNum2=56;
 
 extern int     RangePeriods=10;
+
 extern double  PriceSmoothing=0.3;    // =0.67 bei Fisher_m10 
 extern double  IndexSmoothing=0.3;    // =0.50 bei Fisher_m10
 

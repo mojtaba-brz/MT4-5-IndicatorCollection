@@ -33,15 +33,16 @@
 //
 //
 
-extern string TimeFrame       = "Current time frame";
 extern int    LsmaPeriod      = 50;
+
+extern string TimeFrame       = "Current time frame";
 extern int    LsmaPrice       = 0;
 extern int    AdaptPeriod     = 21;
 extern bool   MultiColor      = true;
 
-extern bool   alertsOn        = true;
+extern bool   alertsOn        = false;
 extern bool   alertsOnCurrent = false;
-extern bool   alertsMessage   = true;
+extern bool   alertsMessage   = false;
 extern bool   alertsSound     = false;
 extern bool   alertsEmail     = false;
 

@@ -29,6 +29,7 @@
 
 //---- input parameters 
 input int                 HMAPeriod=13;           // Period 
+
 input int                 HMAShift=0;             // Shift
 input ENUM_MA_METHOD      InpMAMethod=MODE_LWMA;  // Method
 //Actually, the HMA uses LWMA but you can change it if you want 

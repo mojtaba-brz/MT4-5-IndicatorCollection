@@ -7,9 +7,10 @@
 #property indicator_color3 Red
 #property indicator_color4 CLR_NONE
 
-extern bool Alert_Coral_Crossing = true;
-bool gi_80 = TRUE;
 extern int gi_84 = 34;
+
+extern bool Alert_Coral_Crossing = false;
+bool gi_80 = TRUE;
 double gd_88 = 0.4;
 double g_ibuf_96[];
 double g_ibuf_100[];

@@ -17,6 +17,7 @@
 
 //---- input parameters
 extern int       Range=7;
+
 extern int       Shift=0;
 extern int       ATRPeriod=9;
 extern double    ATRMultipl=2.5;

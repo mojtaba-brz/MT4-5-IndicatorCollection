@@ -20,11 +20,12 @@
 
 
 extern int    Amplitude        = 2;
+
 extern bool   ShowBars         = false;
 extern bool   ShowArrows       = false;
 extern bool   alertsOn         = false;
 extern bool   alertsOnCurrent  = false;
-extern bool   alertsMessage    = true;
+extern bool   alertsMessage    = false;
 extern bool   alertsSound      = false;
 extern bool   alertsEmail      = false;
 

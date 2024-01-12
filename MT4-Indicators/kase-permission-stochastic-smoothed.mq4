@@ -22,6 +22,7 @@
 //
 
 extern int  pstLength     =   9;
+
 extern int  pstX          =   5;
 extern int  pstSmooth     =   3;
 extern int  smoothPeriod  =  10;

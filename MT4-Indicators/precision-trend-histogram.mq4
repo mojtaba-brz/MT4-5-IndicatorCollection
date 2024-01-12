@@ -39,6 +39,7 @@
 #property strict
 
 input int    avgPeriod   = 30; // Average period
+
 input double sensitivity = 3;  // Sensitivity
 
 double upBuffer[],dnBuffer[];

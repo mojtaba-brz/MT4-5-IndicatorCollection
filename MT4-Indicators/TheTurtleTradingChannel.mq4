@@ -1,8 +1,8 @@
 //+------------------------------------------------------------------+
 //| TheTurtleTradingChannel.mq4
-//| Copyright © Pointzero-indicator.com
+//| Copyright ï¿½ Pointzero-indicator.com
 //+------------------------------------------------------------------+
-#property copyright "Copyright © Pointzero-indicator.com"
+#property copyright "Copyright ï¿½ Pointzero-indicator.com"
 #property link      "http://www.pointzero-indicator.com"
 
 //---- indicator settings
@@ -27,7 +27,8 @@
 
 //---- indicator parameters
 extern int  TradePeriod         = 20;     // Donchian channel period for trading signals
-extern int  StopPeriod          = 10;     // Donchian channel period for exit signals
+
+int  StopPeriod          = (int)MathCeil(TradePeriod/2);     // Donchian channel period for exit signals
 extern bool Strict              = false;  // Apply strict entry parameters like the Turtles did
 extern bool DisplayAlerts       = false;  // You know...
 
@@ -79,7 +80,7 @@ int init()
    SetIndexBuffer(5,ExtMapBuffer6);
    SetIndexBuffer(6,TrendDirection);
    
-   Comment("Copyright © http://www.pointzero-indicator.com");
+   Comment("Copyright ï¿½ http://www.pointzero-indicator.com");
    return(0);
 }
 //+------------------------------------------------------------------+

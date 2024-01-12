@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                   SuperTrend.mq4 |
-//|                   Copyright © 2008, Jason Robinson (jnrtrading). |
+//|                   Copyright ï¿½ 2008, Jason Robinson (jnrtrading). |
 //|                                   http://www.spreadtrade2win.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2008, Jason Robinson."
+#property copyright "Copyright ï¿½ 2008, Jason Robinson."
 #property link      "http://www.spreadtrade2win.com"
 
 #property indicator_chart_window
@@ -15,6 +15,7 @@
 double TrendUp[],TrendDown[];
 int changeOfTrend;
 extern int Nbr_Periods=10;
+
 extern double Multiplier=3.0;
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |

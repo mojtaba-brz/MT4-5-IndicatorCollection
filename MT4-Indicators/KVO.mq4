@@ -1,8 +1,8 @@
 //+------------------------------------------------------------------+
 //|                                                          KVO.mq4 |
-//|                                         Copyright © 2009, LeMan. |
+//|                                         Copyright ï¿½ 2009, LeMan. |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2009, LeMan."
+#property copyright "Copyright ï¿½ 2009, LeMan."
 #property link      "b-market@mail.ru"
 
 #property indicator_separate_window
@@ -10,9 +10,12 @@
 #property indicator_color1 Silver
 #property indicator_color2 Red
 //---- input parameters
-extern int       FastEMA = 34;
-extern int       SlowEMA = 55;
-extern int       SignalEMA = 13;
+
+input int config_param = 10;
+
+int                FastEMA         = (int)MathRound(34 * config_param/10);
+int                SlowEMA         = (int)MathRound(55 * config_param/10);
+int                SignalEMA         = (int)MathRound(13 * config_param/10);
 //---- buffers
 double MainBuffer[];
 double SignalBuffer[];

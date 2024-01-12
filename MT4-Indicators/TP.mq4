@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                           TP.mq4 |
-//|                               Copyright © 2012, Gehtsoft USA LLC |
+//|                               Copyright ï¿½ 2012, Gehtsoft USA LLC |
 //|                                            http://fxcodebase.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2012, Gehtsoft USA LLC"
+#property copyright "Copyright ï¿½ 2012, Gehtsoft USA LLC"
 #property link      "http://fxcodebase.com"
 
 #property indicator_separate_window
@@ -13,6 +13,7 @@
 #property indicator_color3 Red
 
 extern int Length=14;
+
 extern bool ShowUpDn=false;
 
 double TP[], Up[], Dn[];

@@ -21,7 +21,8 @@
 
 double SIGNAL[];
 double EMA_Equivalent[];
-input double     EMA_Fastest=14.0;
+input int     EMA_Fastest = 14;
+
 input double     multiplier = 300.0;
 
 //+------------------------------------------------------------------+

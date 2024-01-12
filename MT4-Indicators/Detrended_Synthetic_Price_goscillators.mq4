@@ -60,6 +60,7 @@ enum enColorOn
    chg_onSlope   // Change color on slope change
 };
 input  int             DspPeriod    = 14;          // DSP period
+
 input  enPrices        Price        = pr_median;   // DSP price
 extern int             SignalPeriod = 9;           // Signal period
 input  enColorOn       ColorOn      = chg_onOuter; // Change color on :

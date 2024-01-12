@@ -46,7 +46,7 @@ double Min [];
 
 // ------------------------------------------------------------------
 input int period_high = 100; // HHV:
-input int period_lows = 100; // LLV:
+int period_lows = period_high; // LLV:
 
 string T1 = "== Notifications ==";  // ————————————
 bool   notifications = false;                  // Notifications On?

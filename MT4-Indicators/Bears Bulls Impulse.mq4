@@ -1,8 +1,8 @@
 //+------------------------------------------------------------------+
 //|                                          BearsBullsImpuls-2b.mq4 |
-//|                           Copyright © 2012, basisforex@gmail.com |
+//|                           Copyright ï¿½ 2012, basisforex@gmail.com |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2012, basisforex@gmail.com"
+#property copyright "Copyright ï¿½ 2012, basisforex@gmail.com"
 #property link      "basisforex@gmail.com"
 //----------------------------------------
 #property indicator_separate_window
@@ -11,6 +11,7 @@
 #property indicator_color2 Red
 //----
 extern int maPeriod = 13;
+
 extern int maMODE   = 3;//  0=MODE_SMA; 1=MODE_EMA; 2=MODE_SMMA; 3=MODE_LWMA.
 extern int maPRICE  = 5;//  0=PRICE_CLOSE; 1=PRICE_OPEN; 2=PRICE_HIGH; 3=PRICE_LOW; 4=PRICE_MEDIAN; 5=PRICE_TYPICAL; 6=PRICE_WEIGHTED. 
 //----

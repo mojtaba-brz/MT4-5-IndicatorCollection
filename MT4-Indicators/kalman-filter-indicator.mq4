@@ -1,6 +1,6 @@
 //+------------------------------------------------------------------+
 //|                                                Kalman filter.mq4 |
-//|                              Copyright © 2006, iziogas@mail.com. |
+//|                              Copyright ï¿½ 2006, iziogas@mail.com. |
 //+------------------------------------------------------------------+
 #property copyright "iziogas@mail.com"
 
@@ -17,6 +17,8 @@
 // 4: Median   (H+L/2)
 // 5: Typical  (H+L+C/3)
 // 6: Weighted (H+L+C+C/4)
+extern int fake_input = 1;
+
 extern int Mode=6;
 extern double K=1;
 extern double Sharpness=1;

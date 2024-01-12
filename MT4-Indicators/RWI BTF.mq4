@@ -22,6 +22,7 @@
 #property indicator_color2 Red
 
 input int Length = 2;
+
 input ENUM_TIMEFRAMES tf = PERIOD_CURRENT; // Timeframe
 
 double RWIH[], RWIL[];

@@ -35,7 +35,7 @@
 //+-----------------------------------+
 //|  CXMA class description           | 
 //+-----------------------------------+
-#include <SmoothAlgorithms.mqh> 
+#include "../Libs/SmoothAlgorithms.mqh"
 //---- declaration of the CXMA class variables from the SmoothAlgorithms.mqh file
 CXMA XMA1;
 //+-----------------------------------+

@@ -45,12 +45,6 @@ int init()
 //+------------------------------------------------------------------+
 int start()
   {
-   Comment("\nIf you need MQL CODER quote to AUTOR."
-           +"\n\n- polish student of computer since with big experience in mql"+" \n"+
-           "\n                                     mail to:\n\n>>>>>>>>>>>>   gaa1@poczta.fm    <<<<<<<<<<< "
-           +"\n\nLOW PRICE and HIGH QUAILTY"
-           );
-
    int counted_bars=IndicatorCounted();
    if(counted_bars < 0)  return(-1);
    if(counted_bars>0) counted_bars--;
@@ -106,14 +100,12 @@ int start()
 
       ExtMapBuffer1[pos]=wynik;
       pos--;
-      //Comment(dol,"dol",gora,"gora" );
      }
 
    int   index=Bars-MA_Okresy;
    while(index>=0)
      {
       srednia[index]=iMAOnArray(ExtMapBuffer1,0,MA_Okresy,0,0,index);
-      //Comment(tab2[index],"srednia->",srednia[index]);  
       index--;
      }
    return(0);

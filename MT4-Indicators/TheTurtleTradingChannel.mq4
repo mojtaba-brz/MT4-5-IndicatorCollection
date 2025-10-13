@@ -80,7 +80,6 @@ int init()
    SetIndexBuffer(5,ExtMapBuffer6);
    SetIndexBuffer(6,TrendDirection);
    
-   Comment("Copyright � http://www.pointzero-indicator.com");
    return(0);
 }
 //+------------------------------------------------------------------+

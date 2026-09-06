@@ -5,3 +5,8 @@ MT5-Indicators/*
 MT4-Indicators/*
 !MT4-Indicators/Compiled/
 !MT4-Indicators/*.mq4
+
+# Local indicator validation and compilation products.
+*.ex5
+*.log
+Tests/runs/

@@ -143,6 +143,6 @@ and check for `NormalizedCloseDifferenceTests: 0 failures` in Experts.
 
 Validation on 2026-09-06: both indicator and test script compile with **0 errors,
 0 warnings**. The test script has not yet been executed in MT5 during this
-change; attach the rebuilt indicator and confirm a non-empty histogram after
-its short name stops reporting a history wait.
+change. The user visually confirmed that version 1.33 no longer blinks while
+scrolling a USDCHF chart with EURUSD selected.
 Local EX5 files and compiler logs are ignored. No EA uses this indicator.

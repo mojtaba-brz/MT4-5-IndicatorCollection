@@ -6,8 +6,8 @@
 second symbol's normalized completed close with the chart symbol, using a
 separate-window matte dark-blue histogram. It supports current/higher
 timeframes, broker day/session resets, and a bounded broker-calendar history
-window (14 days by default). Its requested symbol-first input interface is an
-explicit exception to the legacy optimization convention below.
+window (14 days by default). Its first input is an asset enum with automatic
+H1-reference selection, rather than a broker-specific symbol string.
 
 Welcome to the MT4-5-IndicatorCollection! This is a collection of indicators that I use in my MQL projects, and I'm happy to share them with you for free. Your contributions and ideas are also highly appreciated!
 

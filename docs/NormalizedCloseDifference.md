@@ -8,16 +8,20 @@ The plotted value is:
 ```text
 chart_normalized  = 100 * (chart_close / chart_anchor_close - 1)
 second_normalized = 100 * (second_close / second_anchor_close - 1)
-histogram        = chart_normalized - second_normalized
+raw_difference   = chart_normalized - second_normalized
+histogram        = correlation_sign * raw_difference
 ```
 
 Units are **percentage points**, not price points or pips. If the chart symbol
 has risen 1% and the second symbol 2%, the histogram is -1. A positive value means
 the chart symbol has outperformed the second symbol since the anchor.
 
-The output is explicitly **sym1 minus sym2**: chart-symbol normalized close
-minus second-symbol normalized close. The numeric formula is unchanged by the
-color presentation:
+The raw output is explicitly **sym1 minus sym2**: chart-symbol normalized close
+minus second-symbol normalized close. For an inverse companion (a negative H1
+reference correlation), the indicator multiplies that raw difference by `-1`.
+Thus a positive histogram consistently means the chart symbol is stronger than
+its correlation-adjusted companion. The numeric formula is otherwise unchanged
+by the color presentation:
 
 | Output condition | Slope versus preceding plotted bar | Color |
 |---|---|---|
@@ -33,7 +37,7 @@ ordinary sign color. A repeated confirmed higher-timeframe value is flat.
 
 | Input | Meaning |
 |---|---|
-| Second symbol | Exact broker symbol, default `GBPUSD_o`; change the suffix for your broker. It must differ from the chart symbol. |
+| Second asset | Enum: automatic strongest available H1 reference (default), or one of EURUSD, USDJPY, GBPUSD, USDCHF, USDCAD, AUDUSD, NZDUSD, WTI, GOLD, SILVER or DXY. The existing `standard_symbol_to_broker_symbol` resolver supplies the broker's exact Market Watch name. |
 | Timeframe | Current chart timeframe or any higher timeframe. A lower timeframe fails initialization with an explanation in the Experts log. |
 | Reset point | End of day; every session start; Asia start only; London start only; New York start only. |
 | History days | Number of broker-calendar days to draw, including the latest chart day; default `14`. Must be at least 1. |
@@ -44,10 +48,20 @@ New York 15:00. These are fixed broker times, not exchange-local schedules;
 they do not separately adjust to US or UK DST. The broker chart already uses
 broker time, so there is no workstation timezone conversion.
 
-A same-symbol comparison is rejected during initialization: it is mathematically
-zero at every bar and would otherwise look like an empty histogram. For example,
-on a `GBPUSD_o` chart set the second symbol to `EURUSD_o` (or another distinct,
-available broker symbol).
+The H1 reference table is embedded in the indicator from the frozen 2024
+AssetSessionCorrelation Pearson completed-log-return reports. It retains Asia,
+London and New York values for every supported pair. A selected-session reset
+uses that session's value; end-of-day or every-session resets use the pair's
+largest absolute session value. `Auto` chooses the available non-chart asset
+with the largest absolute applicable value. The short name displays the exact
+reference, for example `H1 New York r=-0.945`; that is the platform-visible
+place for a chart-dependent value because MQL5 input-enum labels cannot change
+after the chart symbol is known.
+
+The current chart and selected companion must be distinct supported assets, and
+the companion must already be visible in Market Watch for the shared resolver
+to find its exact broker name. Otherwise initialization fails rather than
+guessing a suffix or using an unverified symbol.
 
 The first matched completed candle after a reset anchors both symbols at zero.
 The anchor therefore occurs when that candle closes, not at the exact reset
@@ -83,10 +97,20 @@ Missing history is requested asynchronously with `CopyRates`; unavailable pairs
 remain blank. A two-second indicator timer repeats the bounded request so a
 weekend, an inactive chart, or a freshly selected second symbol does not require
 the next market tick before it can plot. The short name reports `loading
-history`, `waiting for history`, `no matching closed candles`, or the current
-number of plotted bars. This is diagnostic only; it does not manufacture a
-missing pair. Cached matching candles can be plotted while a longer series is
-still synchronizing.
+history`, `waiting for history`, `waiting; retained`, `no matching closed
+candles`, or the current number of plotted bars. Each retry calculates into
+temporary buffers. It replaces the visible buffers only when the candidate has
+a valid latest closed value; otherwise the previous valid snapshot remains
+visible. This prevents asynchronous history responses from blinking the entire
+histogram. The diagnostic status does not manufacture a missing pair. Cached
+matching candles can be plotted while a longer series is still synchronizing.
+Loading older chart bars while scrolling does not trigger another cross-symbol
+request when the bounded indicator timeline is unchanged. If scrolling extends
+the requested 14-day timeline, the indicator retains its prior snapshot until
+both symbol series synchronize, then publishes the completed replacement once.
+The adapter owns that snapshot with its timestamps and restores it explicitly
+when MT5 clears or reallocates indicator buffers, including recalculations where
+the platform resets `prev_calculated` to zero.
 
 It never substitutes zero prices or interpolates the other symbol. OHLC is
 validated, but the requested formula is explicitly close-only and does not
@@ -99,15 +123,19 @@ visible point. Initially truncated broker history can affect the oldest anchor.
 ## Use and validation
 
 Compile `MT5-Indicators/NormalizedCloseDifference.mq5` in MetaEditor, then attach
-it to the first symbol's chart. Set the exact second-symbol name and the reset
-mode. Keep `Libs/NormalizedCloseDifference.mqh` beside the indicator repository's
-`MT5-Indicators` folder when moving source files. A compiled EX5 can be placed
-in the terminal's Indicators directory independently of the source helper.
+it to a supported chart asset. Keep the shared project layout: the indicator
+includes `Libs/MQLTradingLib/ExchangeTools.mqh` for broker-symbol resolution as
+well as its own `Libs/NormalizedCloseDifference.mqh` core. Select `Auto` or a
+companion asset and the reset mode. A compiled EX5 can be placed in the
+terminal's Indicators directory independently only when that shared resolver is
+also available in the terminal include layout.
 
 The core `CNormalizedCloseDifference` has `SetParams`, `Init`, `Step` and `Reset`;
 each instance owns its baselines. The chart adapter owns its own refresh state.
-`Tests/NormalizedCloseDifferenceTests.mq5` checks normalization/sign, zero
-anchors, sym1-minus-sym2 sign, histogram color selection, session boundaries, day and gap resets, invalid/mismatched/forming
+`Tests/NormalizedCloseDifferenceTests.mq5` checks normalization/sign, inverse
+correlation sign adjustment, atomic snapshot publication, timestamp restoration
+after buffer reallocation, zero
+anchors, histogram color selection, session boundaries, day and gap resets, invalid/mismatched/forming
 candles, explicit reset, calendar-month ends, bounded display, causal
 higher-timeframe projection, missed-pair blanks, and recovery after a delayed
 history response. It is a script: run it in MT5

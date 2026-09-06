@@ -83,6 +83,60 @@ int NormalizedDifferenceColorIndex(const double value,const double previous_valu
    return (has_previous && value>previous_value ? 3 : 2);    // red, dark red
   }
 
+// Publish a recalculated series atomically. An asynchronous CopyRates refresh
+// can temporarily produce no latest closed value; in that case the caller's
+// last valid buffers must remain untouched instead of blinking blank.
+bool NormalizedPublishProjection(const double &candidate[],const double &candidate_colors[],
+                                 const int plotted,double &output[],double &colors[])
+  {
+   int count=ArraySize(candidate);
+   if(plotted<=0 || count<2 || candidate[1]==EMPTY_VALUE ||
+      ArraySize(candidate_colors)!=count || ArraySize(output)<count ||
+      ArraySize(colors)<count)
+      return false;
+   for(int i=0;i<count;++i)
+     {
+      output[i]=candidate[i];
+      colors[i]=candidate_colors[i];
+     }
+   return true;
+  }
+
+// Restore an owned snapshot by timestamp after MT5 reallocates/clears indicator
+// buffers while extending chart history. All time arrays are newest-first.
+int NormalizedRestoreSnapshot(const datetime &snapshot_times[],
+                              const double &snapshot_values[],
+                              const double &snapshot_colors[],
+                              const datetime &current_times[],const int current_total,
+                              double &output[],double &colors[])
+  {
+   ArrayInitialize(output,EMPTY_VALUE);
+   ArrayInitialize(colors,0.0);
+   int saved=ArraySize(snapshot_times);
+   if(saved<=0 || ArraySize(snapshot_values)!=saved ||
+      ArraySize(snapshot_colors)!=saved || current_total<=0)
+      return 0;
+   int current=0,snapshot=0,restored=0;
+   while(current<current_total && snapshot<saved)
+     {
+      if(current_times[current]==snapshot_times[snapshot])
+        {
+         output[current]=snapshot_values[snapshot];
+         colors[current]=snapshot_colors[snapshot];
+         ++current;
+         ++snapshot;
+         ++restored;
+        }
+      else if(current_times[current]>snapshot_times[snapshot])
+         ++current;
+      else
+         ++snapshot;
+     }
+   if(current_total>0)
+      output[0]=EMPTY_VALUE;
+   return restored;
+  }
+
 // One instance owns both anchor closes and the sequential stream. Step accepts
 // completed, timestamp-matched OHLC candles; only their closes enter the
 // explicitly close-only formula. It is always sym1 minus sym2 (the chart
@@ -100,6 +154,7 @@ private:
    datetime          _reset_key;
    double            _chart_anchor;
    double            _second_anchor;
+   double            _correlation_sign;
    double            _value;
 
 public:
@@ -108,18 +163,25 @@ public:
       _initialized=false;
       _timeframe=PERIOD_CURRENT;
       _mode=NORMALIZED_DAY_END;
+      _correlation_sign=1.0;
       Reset();
      }
 
-   bool SetParams(const ENUM_TIMEFRAMES timeframe,const ENUM_NORMALIZED_RESET mode)
+   bool SetParams(const ENUM_TIMEFRAMES timeframe,const ENUM_NORMALIZED_RESET mode,
+                  const double correlation=1.0)
      {
       _initialized=false;
       Reset();
       if(timeframe==PERIOD_CURRENT || PeriodSeconds(timeframe)<=0 ||
-         mode<NORMALIZED_DAY_END || mode>NORMALIZED_NEW_YORK_START)
+         mode<NORMALIZED_DAY_END || mode>NORMALIZED_NEW_YORK_START ||
+         !MathIsValidNumber(correlation))
          return false;
       _timeframe=timeframe;
       _mode=mode;
+      // A negative reference correlation denotes an inverse companion. Keep
+      // the displayed meaning consistent: positive still means the chart
+      // symbol is stronger than its correlation-adjusted companion.
+      _correlation_sign=(correlation<0.0 ? -1.0 : 1.0);
       return true;
      }
 
@@ -167,7 +229,8 @@ public:
         }
       _last_open=chart_bar.time;
       _last_end=closed;
-      _value=100.0*(chart_bar.close/_chart_anchor-second_bar.close/_second_anchor);
+      _value=_correlation_sign*100.0*(chart_bar.close/_chart_anchor-
+                                       second_bar.close/_second_anchor);
       return _value;
      }
 
@@ -224,5 +287,6 @@ public:
    datetime LastEnd(void) const { return _last_end; }
    double ChartAnchor(void) const { return _chart_anchor; }
    double SecondAnchor(void) const { return _second_anchor; }
+   double CorrelationSign(void) const { return _correlation_sign; }
   };
 #endif

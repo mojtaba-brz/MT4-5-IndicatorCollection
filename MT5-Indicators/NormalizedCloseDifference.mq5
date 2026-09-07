@@ -1,5 +1,5 @@
 #property strict
-#property version "1.33"
+#property version "1.34"
 #property description "Correlation-adjusted chart normalized close minus selected companion."
 #property description "Closed candles; broker day/session resets; percentage-point histogram."
 #property indicator_separate_window
@@ -446,6 +446,61 @@ string ResolvedSecondSymbol="";
 double ResolvedH1Correlation=0.0;
 string ResolvedH1Session="";
 bool RetryTimerActive=false;
+string ResetObjectPrefix="";
+
+color NcdResetColor(const datetime boundary)
+  {
+   MqlDateTime decoded={};
+   if(!TimeToStruct(boundary,decoded))
+      return C'82,99,122';
+   if(decoded.hour==3)
+      return C'88,103,122';
+   if(decoded.hour==10)
+      return C'69,112,102';
+   if(decoded.hour==15)
+      return C'118,91,119';
+   return C'82,99,122';
+  }
+
+void DrawResetPoints(const int total,const datetime &times[])
+  {
+   // iCustom calculation instances have no visible indicator window. Avoid
+   // chart-object work there; only an attached indicator owns reset markers.
+   if(total<3 || ResetObjectPrefix=="" || ChartWindowFind()<0)
+      return;
+   datetime cutoff=NormalizedHistoryStart(times[0],InpHistoryDays);
+   for(int object_index=ObjectsTotal(0)-1;object_index>=0;--object_index)
+     {
+      string object_name=ObjectName(0,object_index);
+      if(StringFind(object_name,ResetObjectPrefix)==0 &&
+         (datetime)ObjectGetInteger(0,object_name,OBJPROP_TIME)<cutoff)
+         ObjectDelete(0,object_name);
+     }
+   int count=1;
+   while(count<total && times[count]>=cutoff)
+      ++count;
+   datetime previous_key=0;
+   for(int i=count-1;i>=1;--i)
+     {
+      datetime decision=NormalizedBarEnd(times[i],_Period);
+      datetime key=NormalizedResetKey(decision-1,InpResetPoint);
+      if(key<=0 || key==previous_key)
+         continue;
+      previous_key=key;
+      string name=ResetObjectPrefix+IntegerToString((int)key);
+      if(ObjectFind(0,name)>=0 || !ObjectCreate(0,name,OBJ_VLINE,0,key,0.0))
+         continue;
+      ObjectSetInteger(0,name,OBJPROP_COLOR,NcdResetColor(key));
+      ObjectSetInteger(0,name,OBJPROP_STYLE,STYLE_DOT);
+      ObjectSetInteger(0,name,OBJPROP_WIDTH,1);
+      ObjectSetInteger(0,name,OBJPROP_BACK,true);
+      ObjectSetInteger(0,name,OBJPROP_SELECTABLE,false);
+      ObjectSetInteger(0,name,OBJPROP_HIDDEN,true);
+      ObjectSetString(0,name,OBJPROP_TOOLTIP,
+                      "NCD normalization reset: "+
+                      TimeToString(key,TIME_DATE|TIME_MINUTES));
+     }
+  }
 
 int OnInit(void)
   {
@@ -467,6 +522,8 @@ int OnInit(void)
      }
    IndicatorSetString(INDICATOR_SHORTNAME,"NCD r="+DoubleToString(ResolvedH1Correlation,3)+": "+
                       _Symbol+"-"+ResolvedSecondSymbol);
+   ResetObjectPrefix="NCD_RESET_"+IntegerToString((int)InpResetPoint)+"_"+
+                     ResolvedSecondSymbol+"_";
    Adapter.SetParams(ResolvedSecondSymbol,InpTimeframe,InpResetPoint,ResolvedH1Correlation,
                      ResolvedH1Session,InpHistoryDays);
    if(!Adapter.Init())
@@ -487,6 +544,9 @@ void OnDeinit(const int reason)
    if(RetryTimerActive)
       EventKillTimer();
    RetryTimerActive=false;
+   if(ResetObjectPrefix!="")
+      ObjectsDeleteAll(0,ResetObjectPrefix);
+   ResetObjectPrefix="";
    Adapter.Reset();
   }
 
@@ -501,5 +561,7 @@ int OnCalculate(const int rates_total,const int prev_calculated,const datetime &
                 const long &tick_volume[],const long &volume[],const int &spread[])
   {
    ArraySetAsSeries(time,true);
-   return Adapter.Step(rates_total,prev_calculated,time,DifferenceBuffer,ColorIndexBuffer);
+   int result=Adapter.Step(rates_total,prev_calculated,time,DifferenceBuffer,ColorIndexBuffer);
+   DrawResetPoints(rates_total,time);
+   return result;
   }

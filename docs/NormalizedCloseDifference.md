@@ -48,13 +48,18 @@ New York 15:00. These are fixed broker times, not exchange-local schedules;
 they do not separately adjust to US or UK DST. The broker chart already uses
 broker time, so there is no workstation timezone conversion.
 
+The indicator places muted, color-coded dotted vertical lines at normalization
+boundaries inside the displayed history window. Asia, London, New York and
+broker-day boundaries use distinct subdued colors. These chart objects have
+reset-time tooltips, do not affect buffer values, and are removed on detach.
+
 The H1 reference table is embedded in the indicator from the frozen 2024
 AssetSessionCorrelation Pearson completed-log-return reports. It retains Asia,
 London and New York values for every supported pair. A selected-session reset
 uses that session's value; end-of-day or every-session resets use the pair's
 largest absolute session value. `Auto` chooses the available non-chart asset
-with the largest absolute applicable value. The short name displays the exact
-reference, for example `H1 New York r=-0.945`; that is the platform-visible
+with the largest absolute applicable value. The short name displays the compact
+exact reference, for example `NCD r=-0.945: EURUSD-DXY`; that is the platform-visible
 place for a chart-dependent value because MQL5 input-enum labels cannot change
 after the chart symbol is known.
 
@@ -131,7 +136,7 @@ it to a supported chart asset. Keep the shared project layout: the indicator
 includes `Libs/MQLTradingLib/ExchangeTools.mqh` for broker-symbol resolution as
 well as its own `Libs/NormalizedCloseDifference.mqh` core. Select `Auto` or a
 companion asset and the reset mode. For TrendTrader deployment, use
-`Tools/CompileTrendTrader.bat` in the parent project: it compiles the source and
+`Tools/TrendTraderTools.bat build` in the parent project: it compiles the source and
 publishes its verified EX5 to the terminal root
 `MQL5/Indicators/NormalizedCloseDifference.ex5`. The EA must load that root
 copy, not the compiler's `Indicators/Shared Projects/...` intermediate output.
@@ -148,8 +153,9 @@ higher-timeframe projection, missed-pair blanks, and recovery after a delayed
 history response. It is a script: run it in MT5
 and check for `NormalizedCloseDifferenceTests: 0 failures` in Experts.
 
-Validation on 2026-09-06: both indicator and test script compile with **0 errors,
+Validation on 2026-09-07: both indicator and test script compile with **0 errors,
 0 warnings**. The test script has not yet been executed in MT5 during this
 change. The user visually confirmed that version 1.33 no longer blinks while
 scrolling a USDCHF chart with EURUSD selected. Local EX5 files and compiler logs
-are ignored. TrendTrader 2.101 consumes completed values from buffer 0.
+are ignored. Version 1.34 adds visual reset boundaries without changing buffer
+0; TrendTrader 2.200 consumes the same completed values.

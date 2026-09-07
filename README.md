@@ -4,10 +4,11 @@
 
 [`NormalizedCloseDifference`](docs/NormalizedCloseDifference.md) compares a
 second symbol's normalized completed close with the chart symbol, using a
-separate-window matte dark-blue histogram. It supports current/higher
-timeframes, broker day/session resets, and a bounded broker-calendar history
-window (14 days by default). Its first input is an asset enum with automatic
-H1-reference selection, rather than a broker-specific symbol string.
+separate-window matte blue/red sign-and-slope histogram. It supports
+current/higher timeframes, broker day/session resets, visible reset-boundary
+lines, and a bounded broker-calendar history window (14 days by default). Its
+first input is an asset enum with automatic H1-reference selection, rather than
+a broker-specific symbol string.
 
 `LaguerreRsiFilterAdapter.mq5` is the stable no-space `iCustom` path for the
 existing Laguerre RSI with Laguerre filter implementation. It preserves the

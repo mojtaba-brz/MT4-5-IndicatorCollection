@@ -90,7 +90,7 @@ const NcdH1Correlation NCD_H1_CORRELATIONS[]=
 
 input ENUM_NCD_SECOND_ASSET InpSecondAsset=NCD_AUTO_STRONGEST_H1; // Companion asset
 input ENUM_TIMEFRAMES InpTimeframe=PERIOD_CURRENT;        // Current or higher timeframe
-input ENUM_NORMALIZED_RESET InpResetPoint=NORMALIZED_DAY_END; // Reset point
+input ENUM_NORMALIZED_RESET InpResetPoint=NORMALIZED_EACH_SESSION; // Reset point
 input int InpHistoryDays=14;                              // Calendar days to display (including latest chart day)
 
 string NcdAssetName(const ENUM_NCD_SECOND_ASSET asset)

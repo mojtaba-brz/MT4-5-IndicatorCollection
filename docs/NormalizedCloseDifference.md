@@ -130,9 +130,11 @@ Compile `MT5-Indicators/NormalizedCloseDifference.mq5` in MetaEditor, then attac
 it to a supported chart asset. Keep the shared project layout: the indicator
 includes `Libs/MQLTradingLib/ExchangeTools.mqh` for broker-symbol resolution as
 well as its own `Libs/NormalizedCloseDifference.mqh` core. Select `Auto` or a
-companion asset and the reset mode. A compiled EX5 can be placed in the
-terminal's Indicators directory independently only when that shared resolver is
-also available in the terminal include layout.
+companion asset and the reset mode. For TrendTrader deployment, use
+`Tools/CompileTrendTrader.bat` in the parent project: it compiles the source and
+publishes its verified EX5 to the terminal root
+`MQL5/Indicators/NormalizedCloseDifference.ex5`. The EA must load that root
+copy, not the compiler's `Indicators/Shared Projects/...` intermediate output.
 
 The shared core declares the stable `ENUM_NCD_SECOND_ASSET` input contract, and
 `CNormalizedCloseDifference` has `SetParams`, `Init`, `Step` and `Reset`;
@@ -150,4 +152,4 @@ Validation on 2026-09-06: both indicator and test script compile with **0 errors
 0 warnings**. The test script has not yet been executed in MT5 during this
 change. The user visually confirmed that version 1.33 no longer blinks while
 scrolling a USDCHF chart with EURUSD selected. Local EX5 files and compiler logs
-are ignored. TrendTrader 2.100 consumes completed values from buffer 0.
+are ignored. TrendTrader 2.101 consumes completed values from buffer 0.

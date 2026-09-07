@@ -130,7 +130,8 @@ companion asset and the reset mode. A compiled EX5 can be placed in the
 terminal's Indicators directory independently only when that shared resolver is
 also available in the terminal include layout.
 
-The core `CNormalizedCloseDifference` has `SetParams`, `Init`, `Step` and `Reset`;
+The shared core declares the stable `ENUM_NCD_SECOND_ASSET` input contract, and
+`CNormalizedCloseDifference` has `SetParams`, `Init`, `Step` and `Reset`;
 each instance owns its baselines. The chart adapter owns its own refresh state.
 `Tests/NormalizedCloseDifferenceTests.mq5` checks normalization/sign, inverse
 correlation sign adjustment, atomic snapshot publication, timestamp restoration
@@ -144,5 +145,5 @@ and check for `NormalizedCloseDifferenceTests: 0 failures` in Experts.
 Validation on 2026-09-06: both indicator and test script compile with **0 errors,
 0 warnings**. The test script has not yet been executed in MT5 during this
 change. The user visually confirmed that version 1.33 no longer blinks while
-scrolling a USDCHF chart with EURUSD selected.
-Local EX5 files and compiler logs are ignored. No EA uses this indicator.
+scrolling a USDCHF chart with EURUSD selected. Local EX5 files and compiler logs
+are ignored. TrendTrader 2.100 consumes completed values from buffer 0.

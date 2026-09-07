@@ -10,6 +10,23 @@ enum ENUM_NORMALIZED_RESET
    NORMALIZED_NEW_YORK_START=4       // Selected session: New York (15:00)
   };
 
+// Stable iCustom input contract shared by the indicator and EA consumers.
+enum ENUM_NCD_SECOND_ASSET
+  {
+   NCD_AUTO_STRONGEST_H1=0,  // Auto: strongest available absolute H1 correlation
+   NCD_EURUSD,               // EURUSD
+   NCD_USDJPY,               // USDJPY
+   NCD_GBPUSD,               // GBPUSD
+   NCD_USDCHF,               // USDCHF
+   NCD_USDCAD,               // USDCAD
+   NCD_AUDUSD,               // AUDUSD
+   NCD_NZDUSD,               // NZDUSD
+   NCD_WTI,                  // WTI
+   NCD_GOLD,                 // GOLD
+   NCD_SILVER,               // SILVER
+   NCD_DXY                   // DXY
+  };
+
 // Broker wall-clock boundaries match the session-correlation research. This
 // indicator repository is standalone and does not depend on the parent EA.
 datetime NormalizedResetKey(const datetime stamp,const ENUM_NORMALIZED_RESET mode)

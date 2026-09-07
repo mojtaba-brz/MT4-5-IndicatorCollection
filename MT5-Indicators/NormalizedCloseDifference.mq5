@@ -88,24 +88,7 @@ const NcdH1Correlation NCD_H1_CORRELATIONS[]=
    {"SILVER","DXY",-0.312054401367,-0.391522373519,-0.385780264783}
   };
 
-enum ENUM_NCD_SECOND_ASSET
-  {
-   NCD_AUTO_STRONGEST_H1=0,  // Auto: strongest available absolute H1 correlation
-   NCD_EURUSD,               // EURUSD
-   NCD_USDJPY,               // USDJPY
-   NCD_GBPUSD,               // GBPUSD
-   NCD_USDCHF,               // USDCHF
-   NCD_USDCAD,               // USDCAD
-   NCD_AUDUSD,               // AUDUSD
-   NCD_NZDUSD,               // NZDUSD
-   NCD_WTI,                  // WTI
-   NCD_GOLD,                 // GOLD
-   NCD_SILVER,               // SILVER
-   NCD_DXY                   // DXY
-  };
-
-input group "Second asset (frozen H1 Pearson log-return reference)"
-input ENUM_NCD_SECOND_ASSET InpSecondAsset=NCD_AUTO_STRONGEST_H1; // Companion; exact r appears in indicator name
+input ENUM_NCD_SECOND_ASSET InpSecondAsset=NCD_AUTO_STRONGEST_H1; // Companion asset
 input ENUM_TIMEFRAMES InpTimeframe=PERIOD_CURRENT;        // Current or higher timeframe
 input ENUM_NORMALIZED_RESET InpResetPoint=NORMALIZED_DAY_END; // Reset point
 input int InpHistoryDays=14;                              // Calendar days to display (including latest chart day)

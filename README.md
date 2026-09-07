@@ -9,6 +9,10 @@ timeframes, broker day/session resets, and a bounded broker-calendar history
 window (14 days by default). Its first input is an asset enum with automatic
 H1-reference selection, rather than a broker-specific symbol string.
 
+`LaguerreRsiFilterAdapter.mq5` is the stable no-space `iCustom` path for the
+existing Laguerre RSI with Laguerre filter implementation. It preserves the
+original inputs and buffers.
+
 Welcome to the MT4-5-IndicatorCollection! This is a collection of indicators that I use in my MQL projects, and I'm happy to share them with you for free. Your contributions and ideas are also highly appreciated!
 
 Here are a few important rules to keep in mind:

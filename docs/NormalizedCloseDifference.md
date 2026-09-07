@@ -120,6 +120,10 @@ cannot change previously completed values. Only the requested history window is
 replayed on a new chart bar, with reset-period context loaded before its oldest
 visible point. Initially truncated broker history can affect the oldest anchor.
 
+The retry timer is enabled only on ordinary charts. In the Strategy Tester,
+`CopyBuffer` access already drives indicator calculation, so the nested timer is
+disabled because it is redundant.
+
 ## Use and validation
 
 Compile `MT5-Indicators/NormalizedCloseDifference.mq5` in MetaEditor, then attach

@@ -445,6 +445,7 @@ CNormalizedDifferenceIndicator Adapter;
 string ResolvedSecondSymbol="";
 double ResolvedH1Correlation=0.0;
 string ResolvedH1Session="";
+bool RetryTimerActive=false;
 
 int OnInit(void)
   {
@@ -470,17 +471,22 @@ int OnInit(void)
                      ResolvedH1Session,InpHistoryDays);
    if(!Adapter.Init())
       return INIT_PARAMETERS_INCORRECT;
-   if(!EventSetTimer(2))
+   // In the tester, CopyBuffer requests already drive indicator calculation,
+   // so the standalone chart-history retry timer is redundant.
+   if(!MQLInfoInteger(MQL_TESTER) && !EventSetTimer(2))
      {
       Print("NormalizedCloseDifference: cannot start history retry timer: ",GetLastError());
       return INIT_FAILED;
      }
+   RetryTimerActive=!MQLInfoInteger(MQL_TESTER);
    return INIT_SUCCEEDED;
   }
 
 void OnDeinit(const int reason)
   {
-   EventKillTimer();
+   if(RetryTimerActive)
+      EventKillTimer();
+   RetryTimerActive=false;
    Adapter.Reset();
   }
 

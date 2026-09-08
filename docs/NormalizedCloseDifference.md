@@ -158,4 +158,4 @@ Validation on 2026-09-07: both indicator and test script compile with **0 errors
 change. The user visually confirmed that version 1.33 no longer blinks while
 scrolling a USDCHF chart with EURUSD selected. Local EX5 files and compiler logs
 are ignored. Version 1.34 adds visual reset boundaries without changing buffer
-0; TrendTrader 2.200 consumes the same completed values.
+0; TrendTrader 2.202 consumes the same completed values.

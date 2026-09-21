@@ -1,15 +1,18 @@
 //+------------------------------------------------------------------+
 //|                         RelativeCurrencyStrength.mq5              |
-//|  Single-line relative currency strength for the current FX chart |
+//| Tester-safe single-line relative currency strength               |
 //|                                                                  |
-//|  Example on GBPUSD:                                              |
-//|       output = S_GBP - S_USD                                     |
+//| output = S_BASE - S_QUOTE                                        |
+//| r(BASE/QUOTE) = S_BASE - S_QUOTE                                 |
 //|                                                                  |
-//|  The 8 currency strengths are estimated internally from the      |
-//|  28-cross FX network using weighted least squares, but only the   |
-//|  base-minus-quote strength is plotted.                            |
+//| Important tester behavior:                                       |
+//| - explicitly selects all required foreign symbols;                |
+//| - explicitly triggers their history loading;                      |
+//| - does not publish EMPTY buffers as a completed calculation while |
+//|   tester history is still synchronizing;                          |
+//| - uses completed context bars only for the actual signal.         |
 //+------------------------------------------------------------------+
-#property version   "1.00"
+#property version   "1.20"
 #property indicator_separate_window
 #property indicator_buffers 1
 #property indicator_plots   1
@@ -25,16 +28,11 @@ enum ENUM_CS_WEIGHTING
    CS_INV_VARIANCE=1
   };
 
-input ENUM_TIMEFRAMES   InpStrengthTimeframe = PERIOD_H1;
-input int               InpReturnLookbackBars = 1;
+input ENUM_TIMEFRAMES   InpStrengthTimeframe = PERIOD_CURRENT;
+input int               InpReturnLookbackBars = 12;
 input ENUM_CS_WEIGHTING InpWeighting          = CS_INV_VARIANCE;
-input int               InpWeightLookbackBars = 120;
-
-// If true, the current chart pair is removed from the WLS network.
-// For GBPUSD this means GBP and USD are estimated from the other 27 pairs.
-// Recommended for an independent strength estimate.
+input int               InpWeightLookbackBars = 5000;
 input bool              InpExcludeChartPair   = true;
-
 input int               InpMaxChartBars       = 1200;
 input double            InpRidge              = 1.0e-8;
 input bool              InpShowMissingWarning = true;
@@ -66,12 +64,16 @@ string g_quote="";
 int    g_base_index=-1;
 int    g_quote_index=-1;
 
+bool     g_network_ready=false;
+datetime g_last_wait_log=0;
+string   g_last_wait_symbol="";
+int      g_last_wait_bars=-1;
+
 //+------------------------------------------------------------------+
 ENUM_TIMEFRAMES EffectiveTimeframe()
   {
-   if(InpStrengthTimeframe==PERIOD_CURRENT)
-      return((ENUM_TIMEFRAMES)_Period);
-   return(InpStrengthTimeframe);
+   return(InpStrengthTimeframe==PERIOD_CURRENT ?
+          (ENUM_TIMEFRAMES)_Period : InpStrengthTimeframe);
   }
 
 //+------------------------------------------------------------------+
@@ -80,12 +82,10 @@ int CurrencyIndex(const string ccy)
    for(int i=0;i<8;i++)
       if(CURRENCIES[i]==ccy)
          return(i);
+
    return(-1);
   }
 
-//+------------------------------------------------------------------+
-//| Detect the conventional six-letter FX pair inside broker symbol  |
-//| e.g. GBPUSD_o -> GBPUSD, m.EURJPY -> EURJPY                      |
 //+------------------------------------------------------------------+
 string DetectConventionalPair(const string broker_symbol)
   {
@@ -97,19 +97,20 @@ string DetectConventionalPair(const string broker_symbol)
   }
 
 //+------------------------------------------------------------------+
+//| Resolve broker suffix/prefix, e.g. GBPUSD_o or m.GBPUSD          |
+//+------------------------------------------------------------------+
 string FindBrokerSymbol(const string pair)
   {
    int total=SymbolsTotal(true);
 
-   // Exact match first
    for(int i=0;i<total;i++)
      {
       string s=SymbolName(i,true);
+
       if(s==pair)
          return(s);
      }
 
-   // Then shortest Market Watch symbol containing pair name
    string best="";
    int best_len=1000000;
 
@@ -117,25 +118,20 @@ string FindBrokerSymbol(const string pair)
      {
       string s=SymbolName(i,true);
 
-      if(StringFind(s,pair)>=0)
+      if(StringFind(s,pair)>=0 && StringLen(s)<best_len)
         {
-         int n=StringLen(s);
-
-         if(n<best_len)
-           {
-            best=s;
-            best_len=n;
-           }
+         best=s;
+         best_len=StringLen(s);
         }
      }
 
    if(best!="")
       return(best);
 
-   // Finally inspect all broker symbols
+   // In the Strategy Tester, SymbolsTotal(false) exposes the broker's
+   // available symbol set. Selecting a resolved symbol explicitly requests it
+   // for the testing agent.
    total=SymbolsTotal(false);
-   best="";
-   best_len=1000000;
 
    for(int i=0;i<total;i++)
      {
@@ -147,25 +143,149 @@ string FindBrokerSymbol(const string pair)
          return(s);
         }
 
-      if(StringFind(s,pair)>=0)
+      if(StringFind(s,pair)>=0 && StringLen(s)<best_len)
         {
-         int n=StringLen(s);
-
-         if(n<best_len)
-           {
-            best=s;
-            best_len=n;
-           }
+         best=s;
+         best_len=StringLen(s);
         }
      }
 
    if(best!="")
-     {
       SymbolSelect(best,true);
-      return(best);
+
+   return(best);
+  }
+
+//+------------------------------------------------------------------+
+//| Trigger tester history loading for all required symbols          |
+//+------------------------------------------------------------------+
+void RequestNetworkHistory()
+  {
+   ENUM_TIMEFRAMES tf=EffectiveTimeframe();
+
+   for(int p=0;p<28;p++)
+     {
+      if(!g_available[p])
+         continue;
+
+      if(InpExcludeChartPair && PAIRS[p]==g_chart_pair)
+         continue;
+
+      SymbolSelect(g_symbols[p],true);
+
+      // Each of these calls is an explicit foreign-series reference in the
+      // tester and therefore triggers synchronization/history transfer.
+      Bars(g_symbols[p],tf);
+      SeriesInfoInteger(g_symbols[p],tf,SERIES_SYNCHRONIZED);
+
+      // Force the tester to request enough history for WLookback + return
+      // horizon. A failed/partial copy is expected during the first attempts.
+      int requested=MathMax(32,
+                            InpWeightLookbackBars+
+                            InpReturnLookbackBars+8);
+
+      datetime probe[];
+      ArrayResize(probe,requested);
+      ResetLastError();
+      CopyTime(g_symbols[p],tf,0,requested,probe);
+     }
+  }
+
+//+------------------------------------------------------------------+
+//| Tester-safe readiness check                                      |
+//|                                                                  |
+//| Do NOT declare the indicator calculated while required foreign   |
+//| histories are still loading. Returning 0 from OnCalculate keeps  |
+//| MT5 requesting/recalculating the indicator on following events.  |
+//+------------------------------------------------------------------+
+bool NetworkHistoryReady()
+  {
+   if(g_network_ready)
+      return(true);
+
+   ENUM_TIMEFRAMES tf=EffectiveTimeframe();
+
+   int required=MathMax(32,
+                        InpWeightLookbackBars+
+                        InpReturnLookbackBars+8);
+
+   int usable=0;
+
+   for(int p=0;p<28;p++)
+     {
+      if(!g_available[p])
+         continue;
+
+      if(InpExcludeChartPair && PAIRS[p]==g_chart_pair)
+         continue;
+
+      string symbol=g_symbols[p];
+
+      SymbolSelect(symbol,true);
+
+      bool synchronized=
+         (bool)SeriesInfoInteger(symbol,tf,SERIES_SYNCHRONIZED);
+
+      int bars=Bars(symbol,tf);
+
+      // CopyTime is intentional: it both verifies availability and, when the
+      // tester has not supplied enough history yet, requests/builds more.
+      datetime probe[];
+      ArrayResize(probe,required);
+
+      ResetLastError();
+      int copied=CopyTime(symbol,tf,0,required,probe);
+      int error=GetLastError();
+
+      if(!synchronized || bars<required || copied<required)
+        {
+         datetime now=TimeCurrent();
+
+         // Avoid flooding the Journal. Log if the blocked symbol/state changed,
+         // or approximately once per simulated minute.
+         if(InpShowMissingWarning &&
+            (symbol!=g_last_wait_symbol ||
+             bars!=g_last_wait_bars ||
+             g_last_wait_log==0 ||
+             now-g_last_wait_log>=60))
+           {
+            PrintFormat(
+               "[RelativeCurrencyStrength] waiting_history symbol=%s timeframe=%s synchronized=%s bars=%d required=%d copied=%d error=%d",
+               symbol,
+               EnumToString(tf),
+               (synchronized ? "true" : "false"),
+               bars,
+               required,
+               copied,
+               error
+            );
+
+            g_last_wait_log=now;
+            g_last_wait_symbol=symbol;
+            g_last_wait_bars=bars;
+           }
+
+         return(false);
+        }
+
+      usable++;
      }
 
-   return("");
+   int expected=g_available_count-(InpExcludeChartPair ? 1 : 0);
+
+   if(usable<expected || usable<7)
+      return(false);
+
+   g_network_ready=true;
+
+   PrintFormat(
+      "[RelativeCurrencyStrength] history_ready timeframe=%s symbols=%d required_bars=%d",
+      EnumToString(tf),
+      usable,
+      required
+   );
+
+   return(true);
   }
 
 //+------------------------------------------------------------------+
@@ -178,7 +298,9 @@ bool LoadCloseWindow(const string symbol,
    ArrayResize(closes,count);
 
    ResetLastError();
-   int copied=CopyClose(symbol,tf,start_shift,count,closes);
+
+   int copied=
+      CopyClose(symbol,tf,start_shift,count,closes);
 
    if(copied!=count)
       return(false);
@@ -191,9 +313,10 @@ bool LoadCloseWindow(const string symbol,
   }
 
 //+------------------------------------------------------------------+
-//| Gaussian elimination                                             |
-//+------------------------------------------------------------------+
-bool SolveLinear(double &A[][9],double &b[],double &x[],const int n)
+bool SolveLinear(double &A[][9],
+                 double &b[],
+                 double &x[],
+                 const int n)
   {
    double M[9][10];
 
@@ -268,16 +391,23 @@ bool SolveLinear(double &A[][9],double &b[],double &x[],const int n)
   }
 
 //+------------------------------------------------------------------+
-//| Estimate all 8 strengths internally                              |
+//| Compute the eight latent strengths at chart_time                 |
+//|                                                                  |
+//| The +1 shift is deliberate: the context bar containing           |
+//| chart_time is never used. Only the latest completed context bar  |
+//| and older bars contribute to the signal.                         |
 //+------------------------------------------------------------------+
-bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
+bool ComputeCurrencyStrengths(const datetime chart_time,
+                              double &strength[])
   {
    ENUM_TIMEFRAMES tf=EffectiveTimeframe();
 
    double returns[28];
    double weights[28];
+
    int bases[28];
    int quotes[28];
+
    bool usable[28];
 
    ArrayInitialize(returns,0.0);
@@ -296,35 +426,41 @@ bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
       if(!g_available[p])
          continue;
 
-      // Avoid direct leakage from the current pair if requested.
-      if(InpExcludeChartPair && g_chart_pair!="" && PAIRS[p]==g_chart_pair)
+      if(InpExcludeChartPair && PAIRS[p]==g_chart_pair)
          continue;
 
       string pair=PAIRS[p];
 
-      int ibase=CurrencyIndex(StringSubstr(pair,0,3));
-      int iquote=CurrencyIndex(StringSubstr(pair,3,3));
+      int ibase=
+         CurrencyIndex(StringSubstr(pair,0,3));
+
+      int iquote=
+         CurrencyIndex(StringSubstr(pair,3,3));
 
       if(ibase<0 || iquote<0)
          continue;
 
-      int containing_shift=iBarShift(g_symbols[p],tf,chart_time,false);
+      int containing_shift=
+         iBarShift(g_symbols[p],tf,chart_time,false);
 
       if(containing_shift<0)
          continue;
 
-      // IMPORTANT:
-      // iBarShift points to the TF bar containing chart_time.
-      // +1 means we use the previous completed TF bar only.
+      // Strictly completed context data.
       int start_shift=containing_shift+1;
 
-      int count=(InpWeighting==CS_INV_VARIANCE)
-                ? wlook+horizon
-                : horizon+1;
+      int count=
+         (InpWeighting==CS_INV_VARIANCE ?
+          wlook+horizon :
+          horizon+1);
 
       double closes[];
 
-      if(!LoadCloseWindow(g_symbols[p],tf,start_shift,count,closes))
+      if(!LoadCloseWindow(g_symbols[p],
+                          tf,
+                          start_shift,
+                          count,
+                          closes))
          continue;
 
       int newest=count-1;
@@ -333,7 +469,8 @@ bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
       if(older<0)
          continue;
 
-      double ret=MathLog(closes[newest]/closes[older]);
+      double ret=
+         MathLog(closes[newest]/closes[older]);
 
       if(!MathIsValidNumber(ret))
          continue;
@@ -344,6 +481,7 @@ bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
         {
          double sum=0.0;
          double sumsq=0.0;
+
          int nret=0;
 
          for(int k=0;k<wlook;k++)
@@ -354,7 +492,8 @@ bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
             if(i1<0)
                break;
 
-            double rk=MathLog(closes[i0]/closes[i1]);
+            double rk=
+               MathLog(closes[i0]/closes[i1]);
 
             if(!MathIsValidNumber(rk))
                continue;
@@ -371,6 +510,7 @@ bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
          double var=sumsq/nret-mean*mean;
 
          var=MathMax(var,1.0e-10);
+
          w=1.0/var;
         }
 
@@ -387,17 +527,9 @@ bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
    if(n_equations<7 || weight_sum<=0.0)
       return(false);
 
-   // Normalize weights for numerical conditioning
-   double mean_weight=weight_sum/n_equations;
+   double mean_weight=
+      weight_sum/n_equations;
 
-   // Solve
-   //
-   //   r_pair = S_base - S_quote
-   //
-   // using constrained WLS:
-   //
-   //   sum(S_currency) = 0
-   //
    double M[9][9];
    double rhs[];
 
@@ -419,8 +551,11 @@ bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
       int b=bases[p];
       int q=quotes[p];
 
-      double w=weights[p]/mean_weight;
-      double ret=returns[p];
+      double w=
+         weights[p]/mean_weight;
+
+      double ret=
+         returns[p];
 
       M[b][b]+=w;
       M[q][q]+=w;
@@ -431,13 +566,14 @@ bool ComputeCurrencyStrengths(const datetime chart_time,double &strength[])
       rhs[q]-=w*ret;
      }
 
-   double ridge=MathMax(0.0,InpRidge);
+   double ridge=
+      MathMax(0.0,InpRidge);
 
    for(int i=0;i<8;i++)
      {
       M[i][i]+=ridge;
 
-      // zero-sum constraint row/column
+      // sum(S)=0 constraint
       M[i][8]=1.0;
       M[8][i]=1.0;
      }
@@ -463,87 +599,150 @@ int OnInit()
    if(InpReturnLookbackBars<1)
       return(INIT_PARAMETERS_INCORRECT);
 
-   if(InpWeighting==CS_INV_VARIANCE && InpWeightLookbackBars<10)
+   if(InpWeighting==CS_INV_VARIANCE &&
+      InpWeightLookbackBars<10)
       return(INIT_PARAMETERS_INCORRECT);
 
-   if(InpMaxChartBars<10)
+   if(InpMaxChartBars<2)
       return(INIT_PARAMETERS_INCORRECT);
 
-   SetIndexBuffer(0,StrengthBuffer,INDICATOR_DATA);
-   ArraySetAsSeries(StrengthBuffer,true);
+   SetIndexBuffer(
+      0,
+      StrengthBuffer,
+      INDICATOR_DATA
+   );
 
-   g_chart_pair=DetectConventionalPair(_Symbol);
+   ArraySetAsSeries(
+      StrengthBuffer,
+      true
+   );
+
+   g_chart_pair=
+      DetectConventionalPair(_Symbol);
 
    if(g_chart_pair=="")
      {
-      Print("RelativeCurrencyStrength must be attached to a supported FX pair. Symbol=",
-            _Symbol);
+      Print(
+         "[RelativeCurrencyStrength] unsupported chart symbol: ",
+         _Symbol
+      );
+
       return(INIT_FAILED);
      }
 
-   g_base=StringSubstr(g_chart_pair,0,3);
-   g_quote=StringSubstr(g_chart_pair,3,3);
+   g_base=
+      StringSubstr(g_chart_pair,0,3);
 
-   g_base_index=CurrencyIndex(g_base);
-   g_quote_index=CurrencyIndex(g_quote);
+   g_quote=
+      StringSubstr(g_chart_pair,3,3);
 
-   if(g_base_index<0 || g_quote_index<0)
-      return(INIT_FAILED);
+   g_base_index=
+      CurrencyIndex(g_base);
+
+   g_quote_index=
+      CurrencyIndex(g_quote);
 
    for(int p=0;p<28;p++)
      {
-      g_symbols[p]=FindBrokerSymbol(PAIRS[p]);
-      g_available[p]=(g_symbols[p]!="");
+      g_symbols[p]=
+         FindBrokerSymbol(PAIRS[p]);
+
+      g_available[p]=
+         (g_symbols[p]!="");
 
       if(g_available[p])
         {
-         SymbolSelect(g_symbols[p],true);
+         SymbolSelect(
+            g_symbols[p],
+            true
+         );
+
          g_available_count++;
         }
      }
 
-   PlotIndexSetString(0,PLOT_LABEL,g_base+"-"+g_quote+" Strength");
+   int expected=
+      28;
 
-   IndicatorSetString(
-      INDICATOR_SHORTNAME,
-      StringFormat("%s-%s Relative Strength [%s, %d]",
-                   g_base,
-                   g_quote,
-                   EnumToString(EffectiveTimeframe()),
-                   InpReturnLookbackBars)
-   );
-
-   IndicatorSetInteger(INDICATOR_DIGITS,4);
-
-   IndicatorSetInteger(INDICATOR_LEVELS,1);
-   IndicatorSetDouble(INDICATOR_LEVELVALUE,0,0.0);
-   IndicatorSetInteger(INDICATOR_LEVELCOLOR,0,clrDimGray);
-   IndicatorSetInteger(INDICATOR_LEVELSTYLE,0,STYLE_DOT);
-
-   PrintFormat(
-      "RelativeCurrencyStrength: %s = S_%s - S_%s; found %d/28 FX pairs; exclude chart pair=%s",
-      g_chart_pair,
-      g_base,
-      g_quote,
-      g_available_count,
-      (InpExcludeChartPair ? "true" : "false")
-   );
-
-   if(InpShowMissingWarning && g_available_count<28)
+   if(g_available_count<expected)
      {
       string missing="";
 
       for(int p=0;p<28;p++)
          if(!g_available[p])
-            missing+=(missing=="" ? "" : ", ")+PAIRS[p];
+            missing+=
+               (missing=="" ? "" : ", ")+
+               PAIRS[p];
 
-      Print("Missing FX symbols: ",missing);
+      PrintFormat(
+         "[RelativeCurrencyStrength] symbol_resolution_failed found=%d expected=%d missing=%s",
+         g_available_count,
+         expected,
+         missing
+      );
+
+      // The intended indicator is the full 28-cross network.
+      return(INIT_FAILED);
      }
 
-   // If chart pair is excluded, 27 remaining edges should normally be available.
-   // At minimum we need enough edges to identify all 8 currencies.
-   if(g_available_count<7)
-      return(INIT_FAILED);
+   PlotIndexSetString(
+      0,
+      PLOT_LABEL,
+      g_base+"-"+g_quote+" Strength"
+   );
+
+   IndicatorSetString(
+      INDICATOR_SHORTNAME,
+      StringFormat(
+         "%s-%s Relative Strength [%s, R%d, W%d]",
+         g_base,
+         g_quote,
+         EnumToString(EffectiveTimeframe()),
+         InpReturnLookbackBars,
+         InpWeightLookbackBars
+      )
+   );
+
+   IndicatorSetInteger(
+      INDICATOR_DIGITS,
+      5
+   );
+
+   IndicatorSetInteger(
+      INDICATOR_LEVELS,
+      1
+   );
+
+   IndicatorSetDouble(
+      INDICATOR_LEVELVALUE,
+      0,
+      0.0
+   );
+
+   IndicatorSetInteger(
+      INDICATOR_LEVELCOLOR,
+      0,
+      clrDimGray
+   );
+
+   IndicatorSetInteger(
+      INDICATOR_LEVELSTYLE,
+      0,
+      STYLE_DOT
+   );
+
+   // Explicit tester preload.
+   RequestNetworkHistory();
+
+   PrintFormat(
+      "[RelativeCurrencyStrength] initialized symbol=%s pair=%s timeframe=%s return_lookback=%d weight_lookback=%d exclude_pair=%s",
+      _Symbol,
+      g_chart_pair,
+      EnumToString(EffectiveTimeframe()),
+      InpReturnLookbackBars,
+      InpWeightLookbackBars,
+      (InpExcludeChartPair ? "true" : "false")
+   );
 
    return(INIT_SUCCEEDED);
   }
@@ -563,27 +762,85 @@ int OnCalculate(const int rates_total,
    if(rates_total<=0)
       return(0);
 
-   ArraySetAsSeries(time,true);
+   ArraySetAsSeries(
+      time,
+      true
+   );
+
+   // Critical tester behavior:
+   // do not tell MT5 this indicator has been successfully calculated until all
+   // foreign histories required by WLookback are actually available.
+   if(!NetworkHistoryReady())
+     {
+      RequestNetworkHistory();
+
+      for(int i=0;i<MathMin(rates_total,InpMaxChartBars);i++)
+         StrengthBuffer[i]=EMPTY_VALUE;
+
+      return(0);
+     }
 
    int limit;
 
    if(prev_calculated<=0)
-      limit=MathMin(rates_total,InpMaxChartBars);
+      limit=
+         MathMin(
+            rates_total,
+            InpMaxChartBars
+         );
    else
      {
-      int added=rates_total-prev_calculated;
-      limit=MathMin(rates_total,MathMax(3,added+3));
-      limit=MathMin(limit,InpMaxChartBars);
+      int newly_added=
+         rates_total-prev_calculated;
+
+      limit=
+         MathMin(
+            rates_total,
+            MathMax(2,newly_added+2)
+         );
+
+      limit=
+         MathMin(
+            limit,
+            InpMaxChartBars
+         );
      }
+
+   int successful=0;
 
    for(int i=limit-1;i>=0;i--)
      {
       double s[];
 
-      if(ComputeCurrencyStrengths(time[i],s))
-         StrengthBuffer[i]=s[g_base_index]-s[g_quote_index];
+      if(ComputeCurrencyStrengths(
+            time[i],
+            s))
+        {
+         StrengthBuffer[i]=
+            s[g_base_index]-
+            s[g_quote_index];
+
+         successful++;
+        }
       else
          StrengthBuffer[i]=EMPTY_VALUE;
+     }
+
+   if(successful==0)
+     {
+      // If synchronization was reported ready but no network point can be
+      // solved, force another readiness pass on the next event and surface it.
+      g_network_ready=false;
+
+      if(InpShowMissingWarning)
+         PrintFormat(
+            "[RelativeCurrencyStrength] calculation_wait symbol=%s timeframe=%s no_solved_points=%d",
+            _Symbol,
+            EnumToString(EffectiveTimeframe()),
+            limit
+         );
+
+      return(0);
      }
 
    return(rates_total);
